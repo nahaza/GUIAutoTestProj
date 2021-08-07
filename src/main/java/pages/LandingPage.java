@@ -1,16 +1,26 @@
 package pages;
 
+import libs.TestData;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class LandingPage extends ParentPage{
+public class LandingPage extends ParentPage {
 
-    @FindBy(xpath = ".//a[text()='Log in']")
+    @FindBy(xpath = ".//button[@class='navbar__submenu-toggler st-button_style_none']")
+    private WebElement buttonChangeLanguage;
+
+    @FindBy(xpath = ".//button[text()='English']")
+    private WebElement buttonEnglishLanguage;
+
+    @FindBy(xpath = ".//a[@href='/catalog?auth=login']")
     private WebElement buttonToProceedLogin;
 
-    @FindBy(xpath = ".//a[text()='Register']")
+//    @FindBy(xpath = ".//a[text()='Register']")
+//    private WebElement buttonToProceedRegister;
+
+    @FindBy(xpath = ".//a[@href='/catalog?auth=registration']")
     private WebElement buttonToProceedRegister;
 
     @FindBy(xpath = ".//input[@id='id_login_email']")
@@ -19,7 +29,7 @@ public class LandingPage extends ParentPage{
     @FindBy(xpath = ".//input[@id='id_login_password']")
     private WebElement inputPassword;
 
-    @FindBy(xpath = ".//button[text()='Log in']")
+    @FindBy(xpath = ".//form[@id='login_form']//button[text()='Войти']")
     private WebElement buttonLogin;
 
     @FindBy(xpath = ".//input[@id='id_registration_full-name']")
@@ -31,40 +41,48 @@ public class LandingPage extends ParentPage{
     @FindBy(xpath = ".//input[@id='id_registration_password']")
     private WebElement inputPasswordRegistrationForm;
 
-    @FindBy(xpath = ".//button[text()='Register']")
+    @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
     private WebElement buttonRegister;
 
     public LandingPage(WebDriver webDriver) {
         super(webDriver);
     }
 
-    public void openLandingPage(){
+    public void openLandingPage() {
         try {
             webDriver.get("https://stepik.org/catalog");
             logger.info("Landing page was opened");
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("Cannot work with LandingPage" + e);
             Assert.fail("Cannot work with LandingPage");
         }
     }
 
-    public void clickOnButtonToProceedLogIn(){
+    public void clickOnButtonToChangeLanguage() {
+        clickOnElement(buttonChangeLanguage);
+    }
+
+    public void clickOnButtonToSwitchToEnglish() {
+        clickOnElement(buttonEnglishLanguage);
+    }
+
+    public void clickOnButtonToProceedLogIn() {
         clickOnElement(buttonToProceedLogin);
     }
 
-    public void enterEmailInLogIn(String email){
+    public void enterEmailInLogIn(String email) {
         enterTextToElement(inputEmail, email);
     }
 
-    public void enterPasswordInLogIn(String password){
+    public void enterPasswordInLogIn(String password) {
         enterTextToElement(inputPassword, password);
     }
 
-    public void clickOnButtonLogIn(){
+    public void clickOnButtonLogIn() {
         clickOnElement(buttonLogin);
     }
 
-    public void fillLoginFormAndSubmit(String email, String password){
+    public void fillLoginFormAndSubmit(String email, String password) {
         openLandingPage();
         clickOnButtonToProceedLogIn();
         enterEmailInLogIn(email);
@@ -72,33 +90,38 @@ public class LandingPage extends ParentPage{
         clickOnButtonLogIn();
     }
 
-    public void clickOnButtonToProceedRegister(){
+    public void clickOnButtonToProceedRegister() {
         clickOnElement(buttonToProceedRegister);
     }
 
-    public void enterFullNameInRegistrationForm(String fullName){
+    public void enterFullNameInRegistrationForm(String fullName) {
         enterTextToElement(inputFullNameRegistrationForm, fullName);
     }
 
-    public void enterEmailInRegistrationForm(String email){
+    public void enterEmailInRegistrationForm(String email) {
         enterTextToElement(inputEmailRegistrationForm, email);
     }
 
-    public void enterPasswordInRegistrationForm(String password){
+    public void enterPasswordInRegistrationForm(String password) {
         enterTextToElement(inputPasswordRegistrationForm, password);
     }
 
-    public void clickOnButtonRegister(){
+    public void clickOnButtonRegister() {
         clickOnElement(buttonRegister);
     }
 
-    public void fillRegistrationFormAndSubmit(String fullName, String email, String password){
+    public void fillRegistrationFormAndSubmit(String fullName, String email, String password) {
         openLandingPage();
         clickOnButtonToProceedRegister();
         enterFullNameInRegistrationForm(fullName);
         enterEmailInRegistrationForm(email);
         enterPasswordInRegistrationForm(password);
         clickOnButtonRegister();
+    }
+
+    public HomePage loginWithValidCred() {
+        fillLoginFormAndSubmit(TestData.getValidEmail(), TestData.getValidPassword());
+        return new HomePage(webDriver);
     }
 
 }
