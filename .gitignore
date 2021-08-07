@@ -11,3 +11,4 @@ target/site
 *.iws
 .allure
 allure-results
+.gitignore
