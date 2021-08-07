@@ -2,9 +2,13 @@ package pages;
 
 import libs.TestData;
 import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import static javax.swing.text.html.CSS.getAttribute;
 
 public class LandingPage extends ParentPage {
 
@@ -44,6 +48,9 @@ public class LandingPage extends ParentPage {
     @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
     private WebElement buttonRegister;
 
+    @FindBy(xpath = ".//form[@id='login_form']//li[text()='E-mail адрес и/или пароль не верны.']")
+    private WebElement invalidCredErrorMessage;
+
     public LandingPage(WebDriver webDriver) {
         super(webDriver);
     }
@@ -82,12 +89,24 @@ public class LandingPage extends ParentPage {
         clickOnElement(buttonLogin);
     }
 
-    public void fillLoginFormAndSubmit(String email, String password) {
+    public LandingPage fillLoginFormAndSubmit(String email, String password) {
         openLandingPage();
         clickOnButtonToProceedLogIn();
         enterEmailInLogIn(email);
         enterPasswordInLogIn(password);
         clickOnButtonLogIn();
+        return this;
+    }
+
+
+    public LandingPage checkIsLoginButtonPresent() {
+        Assert.assertTrue(isElementPresent(buttonLogin));
+        return this;
+    }
+
+    public LandingPage checkIsInvalidCredErrorMessagePresent() {
+        Assert.assertTrue(isElementPresent(invalidCredErrorMessage));
+        return this;
     }
 
     public void clickOnButtonToProceedRegister() {
@@ -124,4 +143,14 @@ public class LandingPage extends ParentPage {
         return new HomePage(webDriver);
     }
 
+
+    public LandingPage checkValidationEmptyEmailErrorMessage() {
+        Assert.assertEquals("Заполните это поле.", webDriver.findElement(By.name("login")).getAttribute("validationMessage"));
+        return this;
+    }
+
+    public LandingPage checkValidationEmptyPasswordErrorMessage() {
+        Assert.assertEquals("Заполните это поле.", webDriver.findElement(By.name("password")).getAttribute("validationMessage"));
+        return this;
+    }
 }
