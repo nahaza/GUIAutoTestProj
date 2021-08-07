@@ -1,4 +1,4 @@
-package RegistrationTest;
+package registrationTest;
 
 import baseTest.BaseTest;
 import libs.TestData;
@@ -6,11 +6,11 @@ import org.junit.Test;
 
 public class RegistrationTest extends BaseTest {
     TestData testData = new TestData();
-    String emailToRegister = testData.generateEmailToRegister();
-    String fullNameToRegister = testData.generateFullNameToRegister();
+    String emailToRegister = testData.getEmailToRegister();
+    String fullNameToRegister = testData.getFullNameToRegister();
 
     @Test
-    public void registerNewUser(){
+    public void registerNewUser() {
         landingPage.fillRegistrationFormAndSubmit(fullNameToRegister, emailToRegister, TestData.getValidPassword());
     }
 }

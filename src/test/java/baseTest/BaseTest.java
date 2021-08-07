@@ -12,8 +12,9 @@ import java.util.concurrent.TimeUnit;
 public class BaseTest {
     WebDriver webDriver;
     protected LandingPage landingPage;
+
     @Before
-    public void setUp(){
+    public void setUp() {
         WebDriverManager.chromedriver().setup();
         webDriver = new ChromeDriver();
         webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -24,7 +25,9 @@ public class BaseTest {
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
+        webDriver.manage().deleteAllCookies();
+        webDriver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
         webDriver.quit();
     }
 }

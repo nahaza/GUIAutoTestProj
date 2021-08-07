@@ -4,11 +4,13 @@ import java.util.Random;
 
 public class TestData {
 
-    public final static String VALID_EMAIL = "";
-    public final static String VALID_PASSWORD = "1";
+    private final static String VALID_EMAIL = "veraexpert209+1195675139@gmail.com";
+    private final static String VALID_PASSWORD = "1";
 
 
-    public String emailToRegister = generateEmailToRegister();
+    private String emailToRegister = generateEmailToRegister();
+
+    private String fullNameToRegister = generateFullNameToRegister();
 
     public String getEmailToRegister() {
         return emailToRegister;
@@ -18,22 +20,34 @@ public class TestData {
         return VALID_EMAIL;
     }
 
+    public String getFullNameToRegister() {
+        return fullNameToRegister;
+    }
+
     public static String getValidPassword() {
         return VALID_PASSWORD;
     }
 
+    private static int randomInt = new Random().nextInt();
 
-    public String generateEmailToRegister(){
-        Random random = new Random();
-        int addIntegerToGmail = random.nextInt();
-        String emailToRegister = "halonza.nataliia+"+addIntegerToGmail+"@gmail.com";
+//    private int generateRandomInt(){
+//        return new Random().nextInt();
+//    }
+
+
+    private String generateEmailToRegister() {
+//        Random random = new Random();
+//        int addIntegerToGmail = random.nextInt();
+        emailToRegister = "veraexpert209+" + randomInt + "@gmail.com";
+        System.out.println(emailToRegister);
         return emailToRegister;
+
     }
 
-    public String generateFullNameToRegister(){
-        Random random = new Random();
-        int addIntegerToName = random.nextInt();
-        String fullNameToRegister = "Kesha"+addIntegerToName+"@gmail.com";
+    private String generateFullNameToRegister() {
+//        Random random = new Random();
+//        int addIntegerToName = random.nextInt();
+        fullNameToRegister = "Kesha" + randomInt + "@gmail.com";
         return fullNameToRegister;
     }
 
