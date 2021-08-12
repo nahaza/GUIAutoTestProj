@@ -3,17 +3,24 @@ package pages;
 import libs.TestData;
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 
 public class LandingPage extends ParentPage {
+
+    @FindBy(xpath = ".//nav[@aria-label='Общая навигация по сайту']")
+    private WebElement headerPanel;
+
+    @FindBy(xpath = ".//div[@data-kind='full_course_lists']//h1[text()='Онлайн-курсы']")
+    private WebElement infoPanel;
 
     @FindBy(xpath = ".//button[@class='navbar__submenu-toggler st-button_style_none']")
     private WebElement buttonChangeLanguage;
@@ -23,9 +30,6 @@ public class LandingPage extends ParentPage {
 
     @FindBy(xpath = ".//a[@href='/catalog?auth=login']")
     private WebElement buttonToProceedLogin;
-
-//    @FindBy(xpath = ".//a[text()='Register']")
-//    private WebElement buttonToProceedRegister;
 
     @FindBy(xpath = ".//a[@href='/catalog?auth=registration']")
     private WebElement buttonToProceedRegister;
@@ -60,18 +64,25 @@ public class LandingPage extends ParentPage {
     @FindBy(xpath = ".//button[@class='button_with-loader search-form__submit']")
     private WebElement buttonSearch;
 
-    @FindBy(xpath = ".//div[@data-list-type='search-results']//a[@class='course-card__title']")
-    private List<WebElement> listOfCoursesInSearchResult;
+    @FindBy(xpath = ".//div[@class='search-form__input-wrapper']//div[@class='drop-down__body']")
+    private WebElement dropDownSearchInput;
 
-    @FindBy(xpath = ".//aside[@class='course-promo__main-aside']//button[text()='Поступить на курс']")
-    private WebElement buttonJoinTheCourse;
+    @FindBy(xpath = ".//div[@class='search-form__form']//span[text()='Бесплатные']")
+    private WebElement checkBoxFreeCourse;
 
-    @FindBy(xpath = ".//div[@class='auth-widget sign-form sign-form__shaking ember-view']")
-    private WebElement registerModalWindow;
+    @FindBy(xpath = ".//footer[@class='page-footer page-footer-modern ember-view page_footer']")
+    private WebElement footer;
+
+    private String specificCourseLocator = ".//div[@data-list-type='search-results']//a[text()='%s']";
+
+    private String listOfCoursesInSearchResultLocator =
+            ".//div[@data-list-type='search-results']//a[@class='course-card__title']";
 
     public LandingPage(WebDriver webDriver) {
         super(webDriver);
     }
+
+    Actions actions = new Actions(webDriver);
 
     public void openLandingPage() {
         try {
@@ -177,32 +188,58 @@ public class LandingPage extends ParentPage {
         return this;
     }
 
-    public void enterTheCourseName(String courseNameToSearch){
-        enterTextToElement(inputSearchForm,courseNameToSearch);
+    public void enterTheCourseName(String courseNameToSearch) {
+        enterTextToElement(inputSearchForm, courseNameToSearch);
     }
 
-    public void clickOnSearchButton(){
+    public void clickOnSearchButton() {
         clickOnElement(buttonSearch);
     }
 
-    public void clickOnButtonJoinTheCourse(){
-        clickOnElement(buttonJoinTheCourse);
+    public CoursePage searchAndJoinUniqueExistentFreeCourseByUnauthorisedUser(String specificCourseTitle) {
+        openLandingPage();
+        enterTheCourseName(specificCourseTitle);
+        closeDropDownSearchBodyIfIsDisplayed();
+        clickOnElement(checkBoxFreeCourse);
+        clickOnSearchButton();
+        webDriverWait10.until(ExpectedConditions.urlContains("search"));
+        scrollToCourseWithSpecificTitleInResults(specificCourseTitle);
+        clickOnElement(webDriver.findElement(By.xpath(String.format(
+                specificCourseLocator, specificCourseTitle))));
+        webDriverWait10.until(ExpectedConditions.urlContains("course"));
+        return new CoursePage(webDriver);
     }
 
 
-    public  LandingPage searchAndJoinUniqueExistentFreeCourseByUnauthorisedUser(String specificCourseTitle){
-        openLandingPage();
-        enterTheCourseName(specificCourseTitle);
-        clickOnSearchButton();
-        for (WebElement courseTitleLink:listOfCoursesInSearchResult) {
-            if(courseTitleLink.getText().equals(specificCourseTitle)){
-                clickOnElement(courseTitleLink);
-            } else {
-                logger.error("The course not found");
+    private LandingPage closeDropDownSearchBodyIfIsDisplayed() {
+        try {
+            if (dropDownSearchInput.isDisplayed()) {
+                clickOnElement(headerPanel);
             }
+        } catch (Exception e) {
+            logger.info("No dropDown in searchInput");
         }
-        clickOnButtonJoinTheCourse();
-        new WebDriverWait(webDriver, 10).until(ExpectedConditions.visibilityOf(registerModalWindow));
+        return this;
+    }
+
+
+    public LandingPage scrollToCourseWithSpecificTitleInResults(String specificCourseTitle) {
+        try {
+            while (!webDriver.findElement(By.xpath(String.format(
+                    specificCourseLocator, specificCourseTitle))).isDisplayed()) {
+                List<WebElement> listOfCoursesInSearchResult = webDriver.findElements(By.xpath(
+                        listOfCoursesInSearchResultLocator));
+                System.out.println("Results count: " + listOfCoursesInSearchResult.size());
+                JavascriptExecutor jse = (JavascriptExecutor) webDriver;
+                jse.executeScript("arguments[0].scrollIntoView();"
+                        , listOfCoursesInSearchResult.get(listOfCoursesInSearchResult.size() - 1));
+                webDriverWait10.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(
+                        listOfCoursesInSearchResultLocator), listOfCoursesInSearchResult.size()));
+            }
+        } catch (Exception e) {
+            logger.error("The course with the title " + specificCourseTitle + " was not found");
+            Assert.fail("The course with the title " + specificCourseTitle + " was not found");
+        }
         return this;
     }
 }
