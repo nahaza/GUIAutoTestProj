@@ -10,12 +10,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class ParentPage {
     Logger logger = Logger.getLogger(getClass());
     WebDriver webDriver;
-    WebDriverWait webDriverWait10;
+    WebDriverWait webDriverWait10, webDriverWait5;
 
     protected ParentPage(WebDriver webDriver) {
         this.webDriver = webDriver;
         PageFactory.initElements(webDriver, this);
         webDriverWait10 = new WebDriverWait(webDriver, 10);
+        webDriverWait5 = new WebDriverWait(webDriver, 5);
     }
 
     protected void enterTextToElement(WebElement webElement, String text) {
