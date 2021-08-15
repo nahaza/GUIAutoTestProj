@@ -12,4 +12,17 @@ public class SearchAndJoinCourse extends BaseTest {
                 .clickOnButtonJoinTheCourse()
                 .checkIsButtonRegisterPresent();
     }
+
+    @Test
+    public void searchAndJoinUniqueExistentFreeCourseByLoggedInUser() {
+        landingPage.newUserRegisterSuccessful()
+                .checkIsRedirectToHomePage()
+                .searchAndJoinUniqueExistentFreeCourseByLoggedInUser("АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)")
+                .checkIsRedirectToCoursePage()
+                .checkIsCourseFreeInfoPresent()
+                .clickOnButtonJoinTheCourseLoggedInUser()
+                .checkIsRedirectToLessonPage()
+                .checkIsCourseNamePresent("АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)")
+                .checkIsCourseNextStepPresent();
+    }
 }

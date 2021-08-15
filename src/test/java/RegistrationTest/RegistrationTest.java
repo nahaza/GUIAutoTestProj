@@ -1,16 +1,33 @@
 package registrationTest;
 
 import baseTest.BaseTest;
-import libs.TestData;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(JUnitParamsRunner.class)
 public class RegistrationTest extends BaseTest {
-    TestData testData = new TestData();
-    String emailToRegister = testData.getEmailToRegister();
-    String fullNameToRegister = testData.getFullNameToRegister();
+
 
     @Test
-    public void registerNewUser() {
-        landingPage.fillRegistrationFormAndSubmit(fullNameToRegister, emailToRegister, TestData.getValidPassword());
+    public void newUserRegistrationSuccessful() {
+        landingPage.newUserRegisterSuccessful()
+        .checkIsRedirectToHomePage();
+    }
+
+    @Test
+    @Parameters({
+            "1a, 1@, 1",
+            "1 a, 1 @, 1",
+            "1ag,1@., 1",
+            "Vera, ddf@drf., 1",
+            ",,"
+
+    })
+    public void newUserRegistrationFailed(String fullname, String email, String password){
+        landingPage.fillRegistrationFormAndSubmit(fullname, email, password);
+        landingPage.checkIsButtonToRegisterPresent();
+
     }
 }

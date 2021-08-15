@@ -3,75 +3,77 @@ package pages;
 import libs.TestData;
 import org.junit.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import ru.yandex.qatools.htmlelements.element.Button;
+import ru.yandex.qatools.htmlelements.element.TextBlock;
+import ru.yandex.qatools.htmlelements.element.TextInput;
+import ru.yandex.qatools.htmlelements.element.Select;
+import ru.yandex.qatools.htmlelements.element.CheckBox;
 
-
-import java.util.List;
 
 
 public class LandingPage extends ParentPage {
 
     @FindBy(xpath = ".//nav[@aria-label='Общая навигация по сайту']")
-    private WebElement headerPanel;
+    private TextBlock headerPanel;
 
     @FindBy(xpath = ".//div[@data-kind='full_course_lists']//h1[text()='Онлайн-курсы']")
-    private WebElement infoPanel;
+    private TextBlock infoPanel;
 
     @FindBy(xpath = ".//button[@class='navbar__submenu-toggler st-button_style_none']")
-    private WebElement buttonChangeLanguage;
+    private Button buttonChangeLanguage;
 
     @FindBy(xpath = ".//button[text()='English']")
-    private WebElement buttonEnglishLanguage;
+    private Button buttonEnglishLanguage;
 
     @FindBy(xpath = ".//a[@href='/catalog?auth=login']")
-    private WebElement buttonToProceedLogin;
+    private Button buttonToProceedLogin;
 
     @FindBy(xpath = ".//a[@href='/catalog?auth=registration']")
-    private WebElement buttonToProceedRegister;
+    private Button buttonToProceedRegister;
 
     @FindBy(xpath = ".//input[@id='id_login_email']")
-    private WebElement inputEmail;
+    private TextInput inputEmail;
 
     @FindBy(xpath = ".//input[@id='id_login_password']")
-    private WebElement inputPassword;
+    private TextInput inputPassword;
 
     @FindBy(xpath = ".//form[@id='login_form']//button[text()='Войти']")
-    private WebElement buttonLogin;
+    private Button buttonLogin;
 
     @FindBy(xpath = ".//input[@id='id_registration_full-name']")
-    private WebElement inputFullNameRegistrationForm;
+    private TextInput inputFullNameRegistrationForm;
 
     @FindBy(xpath = ".//input[@id='id_registration_email']")
-    private WebElement inputEmailRegistrationForm;
+    private TextInput inputEmailRegistrationForm;
 
     @FindBy(xpath = ".//input[@id='id_registration_password']")
-    private WebElement inputPasswordRegistrationForm;
+    private TextInput inputPasswordRegistrationForm;
 
     @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
-    private WebElement buttonRegister;
+    private Button buttonRegister;
 
     @FindBy(xpath = ".//form[@id='login_form']//li[text()='E-mail адрес и/или пароль не верны.']")
-    private WebElement invalidCredErrorMessage;
+    private TextBlock invalidCredErrorMessage;
 
     @FindBy(xpath = ".//input[@class='search-form__input ']")
-    private WebElement inputSearchForm;
+    private TextInput inputSearchForm;
 
     @FindBy(xpath = ".//button[@class='button_with-loader search-form__submit']")
-    private WebElement buttonSearch;
+    private Button buttonSearch;
 
     @FindBy(xpath = ".//div[@class='search-form__input-wrapper']//div[@class='drop-down__body']")
-    private WebElement dropDownSearchInput;
+    private Select dropDownSearchInput;
 
     @FindBy(xpath = ".//div[@class='search-form__form']//span[text()='Бесплатные']")
-    private WebElement checkBoxFreeCourse;
+    private CheckBox checkBoxFreeCourse;
 
     @FindBy(xpath = ".//footer[@class='page-footer page-footer-modern ember-view page_footer']")
-    private WebElement footer;
+    private TextBlock footer;
 
     private String specificCourseLocator = ".//div[@data-list-type='search-results']//a[text()='%s']";
 
@@ -82,7 +84,14 @@ public class LandingPage extends ParentPage {
         super(webDriver);
     }
 
+    @Override
+    String getRelativeUrl() {
+        return "/catalog";
+    }
+
+
     Actions actions = new Actions(webDriver);
+    TestData testData = new TestData();
 
     public void openLandingPage() {
         try {
@@ -100,6 +109,10 @@ public class LandingPage extends ParentPage {
 
     public void clickOnButtonToSwitchToEnglish() {
         clickOnElement(buttonEnglishLanguage);
+    }
+
+    public void checkIsButtonToLogInPresent() {
+        Assert.assertTrue(isElementPresent(buttonLogin));
     }
 
     public void clickOnButtonToProceedLogIn() {
@@ -138,6 +151,10 @@ public class LandingPage extends ParentPage {
         return this;
     }
 
+    public void checkIsButtonToRegisterPresent() {
+        Assert.assertTrue(isElementPresent(buttonRegister));
+    }
+
     public void clickOnButtonToProceedRegister() {
         clickOnElement(buttonToProceedRegister);
     }
@@ -167,13 +184,18 @@ public class LandingPage extends ParentPage {
         clickOnButtonRegister();
     }
 
+    public HomePage newUserRegisterSuccessful() {
+        fillRegistrationFormAndSubmit(testData.getFullNameToRegister(), testData.getEmailToRegister(), testData.getValidPassword());
+        return new HomePage(webDriver);
+    }
+
     public LandingPage checkIsRegisterButtonPresent() {
         Assert.assertTrue(isElementPresent(buttonRegister));
         return this;
     }
 
     public HomePage loginWithValidCred() {
-        fillLoginFormAndSubmit(TestData.getValidEmail(), TestData.getValidPassword());
+        fillLoginFormAndSubmit(testData.getValidEmail(), testData.getValidPassword());
         return new HomePage(webDriver);
     }
 
@@ -203,9 +225,9 @@ public class LandingPage extends ParentPage {
         clickOnElement(checkBoxFreeCourse);
         clickOnSearchButton();
         webDriverWait10.until(ExpectedConditions.urlContains("search"));
-        scrollToCourseWithSpecificTitleInResults(specificCourseTitle);
-        clickOnElement(webDriver.findElement(By.xpath(String.format(
-                specificCourseLocator, specificCourseTitle))));
+        WebElement specificCourseLink = scrollToCourseWithSpecificTitleInResults(
+                specificCourseLocator, listOfCoursesInSearchResultLocator, specificCourseTitle);
+        clickOnElement(specificCourseLink, "specificCourseLink");
         webDriverWait10.until(ExpectedConditions.urlContains("course"));
         return new CoursePage(webDriver);
     }
@@ -218,27 +240,6 @@ public class LandingPage extends ParentPage {
             }
         } catch (Exception e) {
             logger.info("No dropDown in searchInput");
-        }
-        return this;
-    }
-
-
-    public LandingPage scrollToCourseWithSpecificTitleInResults(String specificCourseTitle) {
-        try {
-            while (!webDriver.findElement(By.xpath(String.format(
-                    specificCourseLocator, specificCourseTitle))).isDisplayed()) {
-                List<WebElement> listOfCoursesInSearchResult = webDriver.findElements(By.xpath(
-                        listOfCoursesInSearchResultLocator));
-                System.out.println("Results count: " + listOfCoursesInSearchResult.size());
-                JavascriptExecutor jse = (JavascriptExecutor) webDriver;
-                jse.executeScript("arguments[0].scrollIntoView();"
-                        , listOfCoursesInSearchResult.get(listOfCoursesInSearchResult.size() - 1));
-                webDriverWait10.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(
-                        listOfCoursesInSearchResultLocator), listOfCoursesInSearchResult.size()));
-            }
-        } catch (Exception e) {
-            logger.error("The course with the title " + specificCourseTitle + " was not found");
-            Assert.fail("The course with the title " + specificCourseTitle + " was not found");
         }
         return this;
     }
