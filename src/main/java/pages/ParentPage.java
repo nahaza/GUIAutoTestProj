@@ -2,28 +2,64 @@ package pages;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import ru.yandex.qatools.htmlelements.element.TypifiedElement;
+import ru.yandex.qatools.htmlelements.loader.decorator.HtmlElementDecorator;
+import ru.yandex.qatools.htmlelements.loader.decorator.HtmlElementLocatorFactory;
 
-public class ParentPage {
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.containsString;
+
+public abstract class ParentPage {
     Logger logger = Logger.getLogger(getClass());
     WebDriver webDriver;
     WebDriverWait webDriverWait10, webDriverWait5;
+    protected final String baseUrl = "stepik.org";
 
     protected ParentPage(WebDriver webDriver) {
         this.webDriver = webDriver;
-        PageFactory.initElements(webDriver, this);
+        PageFactory.initElements(
+                new HtmlElementDecorator(
+                        new HtmlElementLocatorFactory(webDriver))
+                ,this);
         webDriverWait10 = new WebDriverWait(webDriver, 10);
         webDriverWait5 = new WebDriverWait(webDriver, 5);
+    }
+
+    abstract String getRelativeUrl();
+
+    protected void checkUrl() {
+        Assert.assertEquals("Invalid page"
+                , baseUrl + getRelativeUrl()
+                , webDriver.getCurrentUrl());
+    }
+
+    protected void checkUrlWithPattern() {
+        Assert.assertThat("Invalid page"
+                , webDriver.getCurrentUrl()
+                , containsString(baseUrl + getRelativeUrl()));
+    }
+
+    private String getElementName(WebElement webElement) {
+        String elementName = "";
+        if (webElement instanceof TypifiedElement) {
+            elementName = " '" + ((TypifiedElement) webElement).getName() + "' ";
+        }
+        return elementName;
     }
 
     protected void enterTextToElement(WebElement webElement, String text) {
         try {
             webElement.clear();
             webElement.sendKeys(text);
-            logger.info("'" + text + "' was entered in element");
+            logger.info("'" + text + "' was entered in element " + getElementName(webElement));
         } catch (Exception e) {
             writeErrorAndStopTest(e);
         }
@@ -32,7 +68,17 @@ public class ParentPage {
     protected void clickOnElement(WebElement webElement) {
         try {
             webElement.click();
-            logger.info("Element was clicked");
+            logger.info(getElementName(webElement) + " element was clicked");
+        } catch (Exception e) {
+            writeErrorAndStopTest(e);
+        }
+        webDriverWait10.withMessage("Proceed to next test");
+    }
+
+    protected void clickOnElement(WebElement webElement, String elementName) {
+        try {
+            webElement.click();
+            logger.info(elementName + " element was clicked");
         } catch (Exception e) {
             writeErrorAndStopTest(e);
         }
@@ -48,15 +94,64 @@ public class ParentPage {
         try {
             boolean state = webElement.isDisplayed();
             if (state) {
-                logger.info("Element is present");
+                logger.info(getElementName(webElement) + " element is present");
             } else {
-                logger.info("Element is not present");
+                logger.info(getElementName(webElement) + " element is not present");
             }
             return state;
         } catch (Exception e) {
-            logger.info("Element is not present");
+            logger.info(getElementName(webElement) + " element is not present");
             return false;
         }
     }
 
+    protected boolean isElementPresent(WebElement webElement, String elementName) {
+        try {
+            boolean state = webElement.isDisplayed();
+            if (state) {
+                logger.info(elementName + " element is present");
+            } else {
+                logger.info(elementName + " element is not present");
+            }
+            return state;
+        } catch (Exception e) {
+            logger.info(elementName + " element is not present");
+            return false;
+        }
+    }
+
+    protected void selectTextInDropDownByClickOnOption(WebElement dropDown, WebElement dropDownOptionToBeSelected, String text) {
+        try {
+            clickOnElement(dropDown);
+            webDriverWait10.until(ExpectedConditions.visibilityOf(dropDownOptionToBeSelected));
+            clickOnElement(dropDownOptionToBeSelected);
+            logger.info("' " + text + "' was selected in DropDown " + getElementName(dropDown));
+        } catch (Exception e) {
+            writeErrorAndStopTest(e);
+        }
+    }
+
+    public WebElement scrollToCourseWithSpecificTitleInResults(
+            String specificCourseLocator
+            , String listOfCoursesInSearchResultLocator
+            , String specificCourseTitle) {
+        try {
+            while (!webDriver.findElement(By.xpath(String.format(
+                    specificCourseLocator, specificCourseTitle))).isDisplayed()) {
+                List<WebElement> listOfCoursesInSearchResult = webDriver.findElements(By.xpath(
+                        listOfCoursesInSearchResultLocator));
+                System.out.println("Results count: " + listOfCoursesInSearchResult.size());
+                JavascriptExecutor jse = (JavascriptExecutor) webDriver;
+                jse.executeScript("arguments[0].scrollIntoView();"
+                        , listOfCoursesInSearchResult.get(listOfCoursesInSearchResult.size() - 1));
+                webDriverWait10.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(
+                        listOfCoursesInSearchResultLocator), listOfCoursesInSearchResult.size()));
+            }
+        } catch (Exception e) {
+            logger.error("The course with the title " + specificCourseTitle + " was not found");
+            Assert.fail("The course with the title " + specificCourseTitle + " was not found");
+        }
+        return webDriver.findElement(By.xpath(String.format(
+                specificCourseLocator, specificCourseTitle)));
+    }
 }
