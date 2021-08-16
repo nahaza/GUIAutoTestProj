@@ -20,9 +20,14 @@ public class CoursePage extends ParentPage {
     @FindBy(xpath = ".//button[@aria-label='Profile']")
     private Button buttonProfile;
 
+    @FindBy(xpath = ".//ul[@class='menu menu_theme_popup-dark menu_right drop-down-content ember-view']")
+    private Select dropDownProfile;
+
     @FindBy(xpath = ".//button[text()='Выход']")
     private Button buttonSignOut;
 
+    @FindBy(xpath = ".//div[@class='course-join-button ember-view course-nav__course-join']//a")
+    private Button buttonContinueCourseJoinedPreviously;
 
 
     public CoursePage(WebDriver webDriver) {
@@ -34,7 +39,7 @@ public class CoursePage extends ParentPage {
         return "/course/";
     }
 
-    public CoursePage checkIsRedirectToCoursePage(){
+    public CoursePage checkIsRedirectToCoursePage() {
         checkUrlWithPattern();
         checkIsSignOutButtonPresent();
         return this;
@@ -79,8 +84,15 @@ public class CoursePage extends ParentPage {
 
     public CoursePage checkIsSignOutButtonPresent() {
         clickOnElement(buttonProfile);
+        webDriverWait10.until(ExpectedConditions.visibilityOf(dropDownProfile));
         Assert.assertTrue("SignOut is not present in the Profile menu", isElementPresent(buttonSignOut));
         return this;
+    }
+
+    public LessonPage clickOnButtonContinueCourseOnTheCoursePage() {
+        clickOnElement(buttonContinueCourseJoinedPreviously);
+        webDriverWait10.until(ExpectedConditions.urlContains("lesson"));
+        return new LessonPage(webDriver);
     }
 
 

@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 import ru.yandex.qatools.htmlelements.element.Button;
 
-public class LessonPage extends ParentPage{
+public class LessonPage extends ParentPage {
 
     @FindBy(xpath = ".//button[@aria-label='Profile']")
     private Button buttonProfile;
@@ -18,6 +18,21 @@ public class LessonPage extends ParentPage{
 
     @FindBy(xpath = ".//button[@class='lesson__next-btn button has-icon']")
     private Button courseNextStep;
+
+    @FindBy(xpath = ".//a[@class='ember-link ember-view attempt__wrapper_next-link button success']")
+    private Button buttonNextStepAfterCorrectAnswerSubmission;
+
+    @FindBy(xpath = ".//button[@class='submit-submission']")
+    private Button submitAnswer;
+
+    private String listOfCourseModulesLocator = ".//div[@class='lesson-sidebar__toc-inner']";
+
+    private String listOfCourseLessonsLocator = ".//span[@class='lesson-sidebar__lesson-name']";
+
+    private String listOfLessonStepsOnTopBarLocator = ".//div[@class='m-step-pin ember-view player__step-pin']";
+
+    private String listOfLessonQuizesOnTopBarLocator = "svg-icon easy-quiz_icon ember-view step-pin-icon__icon";
+
 
     protected LessonPage(WebDriver webDriver) {
         super(webDriver);
@@ -35,13 +50,13 @@ public class LessonPage extends ParentPage{
     }
 
 
-    public LessonPage checkIsRedirectToLessonPage(){
+    public LessonPage checkIsRedirectToLessonPage() {
         checkUrlWithPattern();
         checkIsSignOutButtonPresent();
         return this;
     }
 
-    public boolean isCourseNameLinkPresent(String courseName){
+    public boolean isCourseNameLinkPresent(String courseName) {
         return isElementPresent(webDriver.findElement(By.xpath(String.format(
                 courseNameLinkLocator, courseName))), "courseNameLink");
     }
@@ -55,6 +70,14 @@ public class LessonPage extends ParentPage{
     public LessonPage checkIsCourseNextStepPresent() {
         Assert.assertTrue("CourseNextStep is not present on the Page"
                 , isElementPresent(courseNextStep));
+        return this;
+    }
+
+    public LessonPage continueAndFinishCourse() {
+        //1lesson
+        clickOnElement(courseNextStep);
+        clickOnElement(submitAnswer);
+        //checkCountScore:
         return this;
     }
 }

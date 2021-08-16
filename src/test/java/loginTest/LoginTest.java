@@ -10,9 +10,12 @@ import org.junit.runner.RunWith;
 @RunWith(JUnitParamsRunner.class)
 public class LoginTest extends BaseTest {
     @Test
+    @Parameters({
+            "veraexpert209+1195675139@gmail.com, 1"
+    })
     @TestCaseName("doLoginWithValidCred")
-    public void doLoginWithValidCred() {
-        landingPage.loginWithValidCred()
+    public void doLoginWithValidCred(String email, String password) {
+        landingPage.loginWithValidCred(email, password)
                 .checkIsSignOutButtonPresent();
     }
 

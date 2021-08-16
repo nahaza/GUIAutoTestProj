@@ -9,8 +9,15 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.yandex.qatools.htmlelements.element.*;
 
 public class HomePage extends ParentPage {
+
+    @FindBy(xpath = ".//a[@class='ember-link ember-view navbar__link st-link']")
+    private Button buttonMyCourses;
+
     @FindBy(xpath = ".//button[@aria-label='Profile']")
     private Button buttonProfile;
+
+    @FindBy(xpath = ".//ul[@class='menu menu_theme_popup-dark menu_right drop-down-content ember-view']")
+    private Select dropDownProfile;
 
     @FindBy(xpath = ".//button[text()='Выход']")
     private Button buttonSignOut;
@@ -41,6 +48,13 @@ public class HomePage extends ParentPage {
     private String listOfCoursesInSearchResultLocator =
             ".//div[@data-list-type='search-results']//a[@class='course-card__title']";
 
+    private String specificCourseLocatorInMyCourses =
+            ".//div[@class='course-widget__main-info']//a[text()='%s']";
+
+    private String listOfCoursesInMyCoursesLocator =
+            ".//li[@class='items-list__item course-list__item with-lazy-loading future-course-widget ember-view']";
+
+
     public HomePage(WebDriver webDriver) {
         super(webDriver);
     }
@@ -68,11 +82,12 @@ public class HomePage extends ParentPage {
 
     public HomePage checkIsSignOutButtonPresent() {
         clickOnElement(buttonProfile);
+        webDriverWait10.until(ExpectedConditions.visibilityOf(dropDownProfile));
         Assert.assertTrue("SignOut is not present in the Profile menu", isElementPresent(buttonSignOut));
         return this;
     }
 
-    public HomePage checkIsRedirectToHomePage(){
+    public HomePage checkIsRedirectToHomePage() {
         checkUrlWithPattern();
         checkIsSignOutButtonPresent();
         return this;
@@ -82,7 +97,7 @@ public class HomePage extends ParentPage {
         enterTextToElement(inputSearchForm, courseNameToSearch);
     }
 
-    public HomePage checkIsCloseInputSearchFormButtonPresent(){
+    public HomePage checkIsCloseInputSearchFormButtonPresent() {
         Assert.assertTrue("CloseInputSearchFormButton is not present"
                 , isElementPresent(closeInputSearchFormButton));
         return this;
@@ -117,5 +132,19 @@ public class HomePage extends ParentPage {
             logger.info("No dropDown in searchInput");
         }
         return this;
+    }
+
+    public HomePage clickOnMyCourseButton() {
+        clickOnElement(buttonMyCourses);
+        webDriverWait10.until(ExpectedConditions.urlContains("users"));
+        return this;
+    }
+
+    public CoursePage clickOnTheCourseInTheListCoursesJoinedPreviously(String specificCourseTitle) {
+        WebElement specificCourseLink = scrollToCourseWithSpecificTitleInResults(
+                specificCourseLocatorInMyCourses, listOfCoursesInMyCoursesLocator, specificCourseTitle);
+        clickOnElement(specificCourseLink, "specificCourseLink");
+        webDriverWait10.until(ExpectedConditions.urlContains("course"));
+        return new CoursePage(webDriver);
     }
 }

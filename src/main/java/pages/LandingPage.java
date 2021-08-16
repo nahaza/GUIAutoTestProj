@@ -15,7 +15,6 @@ import ru.yandex.qatools.htmlelements.element.Select;
 import ru.yandex.qatools.htmlelements.element.CheckBox;
 
 
-
 public class LandingPage extends ParentPage {
 
     @FindBy(xpath = ".//nav[@aria-label='Общая навигация по сайту']")
@@ -194,8 +193,8 @@ public class LandingPage extends ParentPage {
         return this;
     }
 
-    public HomePage loginWithValidCred() {
-        fillLoginFormAndSubmit(testData.getValidEmail(), testData.getValidPassword());
+    public HomePage loginWithValidCred(String email, String passwrord) {
+        fillLoginFormAndSubmit(email, passwrord);
         return new HomePage(webDriver);
     }
 
