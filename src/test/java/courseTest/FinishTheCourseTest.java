@@ -12,17 +12,18 @@ public class FinishTheCourseTest extends BaseTest {
 
     @Test
     @Parameters({
-            "veraexpert209+-2054885219@gmail.com, 1"
+            "veraexpert209+1523301598@gmail.com,1"
     })
     //the user has joined specific course previously
-    public void finishCourse(String email, String password) {
+    public void finishCourse(String email, String password) throws InterruptedException {
         landingPage.loginWithValidCred(email, password)
                 .checkIsRedirectToHomePage()
                 .clickOnMyCourseButton()
                 .clickOnTheCourseInTheListCoursesJoinedPreviously("АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)")
                 .checkIsRedirectToCoursePage()
                 .clickOnButtonContinueCourseOnTheCoursePage()
-                .checkIsRedirectToLessonPage();
+                .checkIsRedirectToLessonPage()
+        .finishNoExamCourseWithoutDoingTests();
 
 
     }

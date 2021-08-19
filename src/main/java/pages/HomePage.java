@@ -10,7 +10,8 @@ import ru.yandex.qatools.htmlelements.element.*;
 
 public class HomePage extends ParentPage {
 
-    @FindBy(xpath = ".//a[@class='ember-link ember-view navbar__link st-link']")
+//    @FindBy(xpath = ".//a[@class='ember-link ember-view navbar__link st-link']")
+    @FindBy(xpath = ".//header//a[text()='Мои курсы']")
     private Button buttonMyCourses;
 
     @FindBy(xpath = ".//button[@aria-label='Profile']")
