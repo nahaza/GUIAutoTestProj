@@ -8,6 +8,8 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.yandex.qatools.htmlelements.element.*;
 
+import java.util.Map;
+
 public class HomePage extends ParentPage {
 
 //    @FindBy(xpath = ".//a[@class='ember-link ember-view navbar__link st-link']")
@@ -22,6 +24,15 @@ public class HomePage extends ParentPage {
 
     @FindBy(xpath = ".//button[text()='Выход']")
     private Button buttonSignOut;
+
+    @FindBy(xpath = ".//div[@data-theme='confirm']//div[@class='modal-popup__container']")
+    private TextBlock signOutModalPopUp;
+
+    @FindBy(xpath = ".//div[@data-theme='confirm']//button[text()='OK']")
+    private TextBlock buttonSignOutConfirm;
+
+    @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
+    private Button buttonRegister;
 
     @FindBy(xpath = ".//input[@class='search-form__input ']")
     private TextInput inputSearchForm;
@@ -67,11 +78,13 @@ public class HomePage extends ParentPage {
 
 
     public HomePage openHomePage() {
-        LandingPage landingPage = new LandingPage(webDriver);
-        TestData testData = new TestData();
-        landingPage.openLandingPage();
+        LoginPage loginPage = new LoginPage(webDriver);
+        loginPage.openLoginPage();
         if (!isSignOutButtonPresent()) {
-            landingPage.fillLoginFormAndSubmit(testData.getValidEmail(), testData.getValidPassword());
+            Map<String, String> newUserCredentials = loginPage.generateRegisteredNewUserCredentials();
+            String email = newUserCredentials.get("Email");
+            String password = newUserCredentials.get("Password");
+            loginPage.fillLoginFormAndSubmit(email, password);
         }
         return this;
     }
@@ -86,6 +99,16 @@ public class HomePage extends ParentPage {
         webDriverWait10.until(ExpectedConditions.visibilityOf(dropDownProfile));
         Assert.assertTrue("SignOut is not present in the Profile menu", isElementPresent(buttonSignOut));
         return this;
+    }
+
+    public void clickOnSignOutButton() {
+        clickOnElement(buttonProfile);
+        webDriverWait10.until(ExpectedConditions.visibilityOf(dropDownProfile));
+        clickOnElement(buttonSignOut);
+        webDriverWait10.until(ExpectedConditions.visibilityOf(signOutModalPopUp));
+        clickOnElement(buttonSignOutConfirm);
+        Assert.assertTrue("Login button is not present in the Profile menu"
+                , isElementPresent(buttonRegister));
     }
 
     public HomePage checkIsRedirectToHomePage() {

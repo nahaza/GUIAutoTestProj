@@ -1,6 +1,7 @@
 package baseTest;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import libs.TestData;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -11,14 +12,15 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import pages.HomePage;
-import pages.LandingPage;
+import pages.LoginPage;
 
 import java.util.concurrent.TimeUnit;
 
 public class BaseTest {
     WebDriver webDriver;
-    protected LandingPage landingPage;
+    protected LoginPage loginPage;
     protected HomePage homePage;
+    protected TestData testData;
     protected Logger logger = Logger.getLogger(getClass());
 
     @Rule
@@ -31,8 +33,9 @@ public class BaseTest {
         webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         webDriver.manage().window().maximize();
 
-        landingPage = new LandingPage(webDriver);
+        loginPage = new LoginPage(webDriver);
         homePage = new HomePage(webDriver);
+        testData = new TestData();
 
     }
 

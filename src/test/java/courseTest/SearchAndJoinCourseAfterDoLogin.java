@@ -1,21 +1,25 @@
 package courseTest;
 
 import baseTest.BaseTest;
+import org.junit.Before;
 import org.junit.Test;
 
-public class SearchAndJoinCourse extends BaseTest {
+import java.util.Map;
 
-    @Test
-    public void searchAndJoinUniqueExistentFreeCourseByUnauthorisedUser() {
-        landingPage.searchAndJoinUniqueExistentFreeCourseByUnauthorisedUser("C#")
-                .checkIsCourseFreeInfoPresent()
-                .clickOnButtonJoinTheCourse()
-                .checkIsButtonRegisterPresent();
+public class SearchAndJoinCourseAfterDoLogin extends BaseTest {
+    String email;
+    String password;
+
+    @Before
+    public void generateCredentials() {
+        Map<String, String> newUserCredentials = loginPage.generateRegisteredNewUserCredentials();
+        email = newUserCredentials.get("Email");
+        password = newUserCredentials.get("Password");
     }
 
     @Test
     public void searchAndJoinUniqueExistentFreeCourseByLoggedInUser() {
-        landingPage.newUserRegisterSuccessful()
+        loginPage.loginWithValidCred(email, password)
                 .checkIsRedirectToHomePage()
                 .searchAndJoinUniqueExistentFreeCourseByLoggedInUser("АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)")
                 .checkIsRedirectToCoursePage()
