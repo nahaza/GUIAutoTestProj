@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.yandex.qatools.htmlelements.element.Button;
@@ -14,8 +13,11 @@ import ru.yandex.qatools.htmlelements.element.TextInput;
 import ru.yandex.qatools.htmlelements.element.Select;
 import ru.yandex.qatools.htmlelements.element.CheckBox;
 
+import java.util.HashMap;
+import java.util.Map;
 
-public class LandingPage extends ParentPage {
+
+public class LoginPage extends ParentPage {
 
     @FindBy(xpath = ".//nav[@aria-label='Общая навигация по сайту']")
     private TextBlock headerPanel;
@@ -56,6 +58,21 @@ public class LandingPage extends ParentPage {
     @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
     private Button buttonRegister;
 
+    @FindBy(xpath = ".//button[@aria-label='Profile']")
+    private Button buttonProfile;
+
+    @FindBy(xpath = ".//ul[@class='menu menu_theme_popup-dark menu_right drop-down-content ember-view']")
+    private Select dropDownProfile;
+
+    @FindBy(xpath = ".//button[text()='Выход']")
+    private Button buttonSignOut;
+
+    @FindBy(xpath = ".//div[@data-theme='confirm']//div[@class='modal-popup__container']")
+    private TextBlock signOutModalPopUp;
+
+    @FindBy(xpath = ".//div[@data-theme='confirm']//button[text()='OK']")
+    private TextBlock buttonSignOutConfirm;
+
     @FindBy(xpath = ".//form[@id='login_form']//li[text()='E-mail адрес и/или пароль не верны.']")
     private TextBlock invalidCredErrorMessage;
 
@@ -79,7 +96,7 @@ public class LandingPage extends ParentPage {
     private String listOfCoursesInSearchResultLocator =
             ".//div[@data-list-type='search-results']//a[@class='course-card__title']";
 
-    public LandingPage(WebDriver webDriver) {
+    public LoginPage(WebDriver webDriver) {
         super(webDriver);
     }
 
@@ -89,10 +106,9 @@ public class LandingPage extends ParentPage {
     }
 
 
-    Actions actions = new Actions(webDriver);
     TestData testData = new TestData();
 
-    public void openLandingPage() {
+    public void openLoginPage() {
         try {
             webDriver.get("https://stepik.org/catalog");
             logger.info("Landing page was opened");
@@ -100,18 +116,6 @@ public class LandingPage extends ParentPage {
             logger.error("Cannot work with LandingPage" + e);
             Assert.fail("Cannot work with LandingPage");
         }
-    }
-
-    public void clickOnButtonToChangeLanguage() {
-        clickOnElement(buttonChangeLanguage);
-    }
-
-    public void clickOnButtonToSwitchToEnglish() {
-        clickOnElement(buttonEnglishLanguage);
-    }
-
-    public void checkIsButtonToLogInPresent() {
-        Assert.assertTrue(isElementPresent(buttonLogin));
     }
 
     public void clickOnButtonToProceedLogIn() {
@@ -130,8 +134,8 @@ public class LandingPage extends ParentPage {
         clickOnElement(buttonLogin);
     }
 
-    public LandingPage fillLoginFormAndSubmit(String email, String password) {
-        openLandingPage();
+    public LoginPage fillLoginFormAndSubmit(String email, String password) {
+        openLoginPage();
         clickOnButtonToProceedLogIn();
         enterEmailInLogIn(email);
         enterPasswordInLogIn(password);
@@ -139,13 +143,12 @@ public class LandingPage extends ParentPage {
         return this;
     }
 
-
-    public LandingPage checkIsLoginButtonPresent() {
+    public LoginPage checkIsLoginButtonPresent() {
         Assert.assertTrue(isElementPresent(buttonLogin));
         return this;
     }
 
-    public LandingPage checkIsInvalidCredErrorMessagePresent() {
+    public LoginPage checkIsInvalidCredErrorMessagePresent() {
         Assert.assertTrue(isElementPresent(invalidCredErrorMessage));
         return this;
     }
@@ -175,7 +178,7 @@ public class LandingPage extends ParentPage {
     }
 
     public void fillRegistrationFormAndSubmit(String fullName, String email, String password) {
-        openLandingPage();
+        openLoginPage();
         clickOnButtonToProceedRegister();
         enterFullNameInRegistrationForm(fullName);
         enterEmailInRegistrationForm(email);
@@ -183,28 +186,49 @@ public class LandingPage extends ParentPage {
         clickOnButtonRegister();
     }
 
-    public HomePage newUserRegisterSuccessful() {
-        fillRegistrationFormAndSubmit(testData.getFullNameToRegister(), testData.getEmailToRegister(), testData.getValidPassword());
+    public Map<String, String> generateRegisteredNewUserCredentials() {
+        String fullname = testData.getFullNameToRegister();
+        String email = testData.getEmailToRegister();
+        String password = testData.getPasswordToRegister();
+        Map<String, String> newUserCredentials = new HashMap<>();
+        newUserCredentials.put("Username", fullname);
+        newUserCredentials.put("Email", email);
+        newUserCredentials.put("Password", password);
+        fillRegistrationFormAndSubmit(fullname, email, password);
+        new HomePage(webDriver).clickOnSignOutButton();
+        return newUserCredentials;
+    }
+
+    public Map<String, String> generateCredentialsOfUserWithJoinedFreeCourse(String specificCourseTitle) {
+        String fullname = testData.getFullNameToRegister();
+        String email = testData.getEmailToRegister();
+        String password = testData.getPasswordToRegister();
+        Map<String, String> newUserCredentials = new HashMap<>();
+        newUserCredentials.put("Username", fullname);
+        newUserCredentials.put("Email", email);
+        newUserCredentials.put("Password", password);
+        fillRegistrationFormAndSubmit(fullname, email, password);
+        new HomePage(webDriver).checkIsRedirectToHomePage()
+                .searchAndJoinUniqueExistentFreeCourseByLoggedInUser(specificCourseTitle)
+                .checkIsRedirectToCoursePage()
+                .clickOnButtonJoinTheCourseLoggedInUser()
+                .checkIsRedirectToLessonPage();
+        new HomePage(webDriver).clickOnSignOutButton();
+        return newUserCredentials;
+    }
+
+    public HomePage loginWithValidCred(String email, String password) {
+        fillLoginFormAndSubmit(email, password);
         return new HomePage(webDriver);
     }
 
-    public LandingPage checkIsRegisterButtonPresent() {
-        Assert.assertTrue(isElementPresent(buttonRegister));
-        return this;
-    }
 
-    public HomePage loginWithValidCred(String email, String passwrord) {
-        fillLoginFormAndSubmit(email, passwrord);
-        return new HomePage(webDriver);
-    }
-
-
-    public LandingPage checkValidationEmptyEmailErrorMessage() {
+    public LoginPage checkValidationEmptyEmailErrorMessage() {
         Assert.assertEquals("Заполните это поле.", webDriver.findElement(By.name("login")).getAttribute("validationMessage"));
         return this;
     }
 
-    public LandingPage checkValidationEmptyPasswordErrorMessage() {
+    public LoginPage checkValidationEmptyPasswordErrorMessage() {
         Assert.assertEquals("Заполните это поле.", webDriver.findElement(By.name("password")).getAttribute("validationMessage"));
         return this;
     }
@@ -218,7 +242,7 @@ public class LandingPage extends ParentPage {
     }
 
     public CoursePage searchAndJoinUniqueExistentFreeCourseByUnauthorisedUser(String specificCourseTitle) {
-        openLandingPage();
+        openLoginPage();
         enterTheCourseName(specificCourseTitle);
         closeDropDownSearchBodyIfIsDisplayed();
         clickOnElement(checkBoxFreeCourse);
@@ -232,7 +256,7 @@ public class LandingPage extends ParentPage {
     }
 
 
-    private LandingPage closeDropDownSearchBodyIfIsDisplayed() {
+    private LoginPage closeDropDownSearchBodyIfIsDisplayed() {
         try {
             if (dropDownSearchInput.isDisplayed()) {
                 clickOnElement(headerPanel);

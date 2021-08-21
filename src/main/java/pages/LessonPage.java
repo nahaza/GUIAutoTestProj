@@ -3,8 +3,15 @@ package pages;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.yandex.qatools.htmlelements.element.Button;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class LessonPage extends ParentPage {
 
@@ -16,8 +23,9 @@ public class LessonPage extends ParentPage {
 
     private String courseNameLinkLocator = ".//a[@title='%s']";
 
-    @FindBy(xpath = ".//button[@class='lesson__next-btn button has-icon']")
-    private Button courseNextStep;
+    //    @FindBy(xpath = ".//button[@class='lesson__next-btn button has-icon']")
+    @FindBy(xpath = ".//div[@class='lesson__footer-nav-buttons']//span[text()='Следующий шаг']")
+    private Button buttonCourseNextStep;
 
     @FindBy(xpath = ".//a[@class='ember-link ember-view attempt__wrapper_next-link button success']")
     private Button buttonNextStepAfterCorrectAnswerSubmission;
@@ -27,11 +35,16 @@ public class LessonPage extends ParentPage {
 
     private String listOfCourseModulesLocator = ".//div[@class='lesson-sidebar__toc-inner']";
 
-    private String listOfCourseLessonsLocator = ".//span[@class='lesson-sidebar__lesson-name']";
+    private String listOfCourseLessonsLocator = ".//a[contains(@class, 'ember-view lesson-sidebar__lesson')]";
 
-    private String listOfLessonStepsOnTopBarLocator = ".//div[@class='m-step-pin ember-view player__step-pin']";
+    private String listOfLessonStepsOnTopBarLocator = ".//div[@class='player-topbar__step-pins']//div[@class='m-step-pin ember-view player__step-pin']";
+
 
     private String listOfLessonQuizesOnTopBarLocator = "svg-icon easy-quiz_icon ember-view step-pin-icon__icon";
+
+    private String checkboxOptionsLesson1TestStep4Locator = ".//div[@data-type='choice-quiz']//span[@class='choice-quiz-show__option s-checkbox__label']";
+
+    protected List<WebElement> listOfLessons = webDriver.findElements(By.xpath(listOfCourseLessonsLocator));
 
 
     protected LessonPage(WebDriver webDriver) {
@@ -52,7 +65,7 @@ public class LessonPage extends ParentPage {
 
     public LessonPage checkIsRedirectToLessonPage() {
         checkUrlWithPattern();
-        checkIsSignOutButtonPresent();
+        //checkIsSignOutButtonPresent();
         return this;
     }
 
@@ -69,15 +82,55 @@ public class LessonPage extends ParentPage {
 
     public LessonPage checkIsCourseNextStepPresent() {
         Assert.assertTrue("CourseNextStep is not present on the Page"
-                , isElementPresent(courseNextStep));
+                , isElementPresent(buttonCourseNextStep));
         return this;
     }
 
-    public LessonPage continueAndFinishCourse() {
-        //1lesson
-        clickOnElement(courseNextStep);
-        clickOnElement(submitAnswer);
-        //checkCountScore:
+    public LessonPage finishNoExamCourseWithoutDoingTests() throws InterruptedException {
+        //List<WebElement> listOfLessons = webDriver.findElements(By.xpath(listOfCourseLessonsLocator));
+        for (int i = 0; i < listOfLessons.size(); i++) {
+            clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));
+            Thread.sleep(2000);
+            webDriverWait10.until(ExpectedConditions.urlContains("/step/1"));
+            logger.info("Lesson " + listOfLessons.get(i).getText());
+            List<WebElement> listOfLessonSteps = webDriver.findElements(By.xpath(listOfLessonStepsOnTopBarLocator));
+            for (int j = 0; j < listOfLessonSteps.size(); j++) {
+                clickOnElement(listOfLessonSteps.get(j), "lesson " + (i + 1) + ", step " + (j + 1));
+                webDriverWait10.until(ExpectedConditions.titleContains("Шаг " + (j + 1)));
+            }
+        }
+        scrollToWebElement(buttonCourseNextStep);
+        clickOnElement(buttonCourseNextStep);
+        Assert.assertTrue(webDriver.findElement(By.xpath(".//div[@class='modal-popup__container']")).isDisplayed());
         return this;
     }
+
+    public LessonPage countScore() {
+        return this;
+    }
+
+    public LessonPage completeLesson1Course95468() throws InterruptedException {
+        if (isCourseNameLinkPresent("АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)")) {
+            //scrollToWebElement(webDriver.findElement(By.partialLinkText("Быстрый старт")));
+            WebElement lesson1Course95468 = webDriver.findElement(By.partialLinkText("Быстрый старт"));
+            clickOnElement(lesson1Course95468);
+            Thread.sleep(2000);
+            webDriverWait10.until(ExpectedConditions.urlContains("/step/1"));
+            Assert.assertEquals("1.1  Быстрый старт", webDriver.findElement(By.xpath(".//div[@class='top-tools__lesson-name']")).getText());
+            List<WebElement> listOfLessonSteps = webDriver.findElements(By.xpath(".//span[@class='svg-icon null_icon ember-view step-pin-icon__icon']"));
+            for (int j = 0; j < listOfLessonSteps.size(); j++) {
+                clickOnElement(listOfLessonSteps.get(j), "unit 1, lesson " + (j + 1));
+                Thread.sleep(1000);
+            }
+            List<WebElement> listOfLessonTests = webDriver.findElements(By.xpath(".//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']"));
+            clickOnElement(listOfLessonTests.get(1));
+            Thread.sleep(1000);
+
+        }
+        scrollToWebElement(buttonCourseNextStep);
+        clickOnElement(buttonCourseNextStep);
+        Assert.assertEquals("1.2 Глагол to be", webDriver.findElement(By.xpath(".//div[@class='top-tools__lesson-name']")).getText());
+        return this;
+    }
+
 }

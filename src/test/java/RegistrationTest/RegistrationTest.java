@@ -12,8 +12,9 @@ public class RegistrationTest extends BaseTest {
 
     @Test
     public void newUserRegistrationSuccessful() {
-        landingPage.newUserRegisterSuccessful()
-        .checkIsRedirectToHomePage();
+        loginPage.fillRegistrationFormAndSubmit(
+                testData.getFullNameToRegister(), testData.getEmailToRegister(), testData.getPasswordToRegister());
+        homePage.checkIsRedirectToHomePage();
     }
 
     @Test
@@ -25,9 +26,9 @@ public class RegistrationTest extends BaseTest {
             ",,"
 
     })
-    public void newUserRegistrationFailed(String fullname, String email, String password){
-        landingPage.fillRegistrationFormAndSubmit(fullname, email, password);
-        landingPage.checkIsButtonToRegisterPresent();
+    public void newUserRegistrationFailed(String fullname, String email, String password) {
+        loginPage.fillRegistrationFormAndSubmit(fullname, email, password);
+        loginPage.checkIsButtonToRegisterPresent();
 
     }
 }

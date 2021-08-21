@@ -8,14 +8,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(JUnitParamsRunner.class)
-public class LoginTest extends BaseTest {
+public class InvalidLoginTest extends BaseTest {
     @Test
     @Parameters({
             "veraexpert209+1195675139@gmail.com, 1"
     })
     @TestCaseName("doLoginWithValidCred")
     public void doLoginWithValidCred(String email, String password) {
-        landingPage.loginWithValidCred(email, password)
+        loginPage.loginWithValidCred(email, password)
                 .checkIsSignOutButtonPresent();
     }
 
@@ -27,7 +27,7 @@ public class LoginTest extends BaseTest {
     })
     @TestCaseName("doLoginWithInvalidCred: email={0}, password={1}")
     public void doLoginWithInvalidCred(String email, String password) {
-        landingPage.fillLoginFormAndSubmit(email, password)
+        loginPage.fillLoginFormAndSubmit(email, password)
                 .checkIsLoginButtonPresent()
                 .checkIsInvalidCredErrorMessagePresent();
     }
@@ -37,18 +37,18 @@ public class LoginTest extends BaseTest {
             ","
     })
     public void doLoginWithEmptyCred(String email, String password) {
-        landingPage.fillLoginFormAndSubmit(email, password)
+        loginPage.fillLoginFormAndSubmit(email, password)
                 .checkIsLoginButtonPresent();
     }
 
     @Test
     public void checkValidationLoginErrorMessages() {
-        landingPage.fillLoginFormAndSubmit("", "");
-        landingPage.checkValidationEmptyEmailErrorMessage();
-        landingPage.enterEmailInLogIn("veraexpert209+1195675139@gmail.coml");
-        landingPage.clickOnButtonLogIn();
-        landingPage.checkValidationEmptyPasswordErrorMessage();
-        landingPage.checkIsLoginButtonPresent();
+        loginPage.fillLoginFormAndSubmit("", "");
+        loginPage.checkValidationEmptyEmailErrorMessage();
+        loginPage.enterEmailInLogIn("veraexpert209+1195675139@gmail.coml");
+        loginPage.clickOnButtonLogIn();
+        loginPage.checkValidationEmptyPasswordErrorMessage();
+        loginPage.checkIsLoginButtonPresent();
     }
 
 }

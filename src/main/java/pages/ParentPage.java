@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -28,7 +29,7 @@ public abstract class ParentPage {
         PageFactory.initElements(
                 new HtmlElementDecorator(
                         new HtmlElementLocatorFactory(webDriver))
-                ,this);
+                , this);
         webDriverWait10 = new WebDriverWait(webDriver, 10);
         webDriverWait5 = new WebDriverWait(webDriver, 5);
     }
@@ -72,7 +73,7 @@ public abstract class ParentPage {
         } catch (Exception e) {
             writeErrorAndStopTest(e);
         }
-        webDriverWait10.withMessage("Proceed to next test");
+        //webDriverWait10.withMessage("Proceed to next test");
     }
 
     protected void clickOnElement(WebElement webElement, String elementName) {
@@ -82,7 +83,7 @@ public abstract class ParentPage {
         } catch (Exception e) {
             writeErrorAndStopTest(e);
         }
-        webDriverWait10.withMessage("Proceed to next test");
+        //webDriverWait10.withMessage("Proceed to next test");
     }
 
     private void writeErrorAndStopTest(Exception e) {
@@ -154,4 +155,33 @@ public abstract class ParentPage {
         return webDriver.findElement(By.xpath(String.format(
                 specificCourseLocator, specificCourseTitle)));
     }
+
+    public void scrollToWebElement(WebElement webElement) {
+        ((JavascriptExecutor) webDriver).executeScript("arguments[0].scrollIntoView();", webElement);
+        webDriverWait10.until(ExpectedConditions.elementToBeClickable(webElement));
+    }
+
+    public void dragAndDropElements(String fromElementLocator, String toElementLocator, String targetTextToBe) {
+        Actions actions = new Actions(webDriver);
+        WebElement fromElement = webDriver.findElement(By.xpath(fromElementLocator));
+        WebElement toElement = webDriver.findElement(By.xpath(toElementLocator));
+        actions.dragAndDrop(fromElement, toElement).perform();
+        if (toElement.getText().equals(targetTextToBe)) {
+            logger.info("Element" + toElement.getText() + " was dropped");
+        } else {
+            logger.error("Element was not dropped properly");
+            Assert.fail("Element was not dropped properly");
+        }
+    }
+
+    public void selectCheckboxOptionWithValue(String textOfOptionsToBeSelected, String optionsToBeSelectedLocator) {
+        String[] listOfOptionsTextToBeSelected = textOfOptionsToBeSelected.split(";");
+        List<WebElement> optionsToBeSelected = webDriver.findElements(By.xpath(optionsToBeSelectedLocator));
+        for (WebElement element : optionsToBeSelected) {
+            if (textOfOptionsToBeSelected.contains(element.getText())) {
+                clickOnElement(element, element.getText());
+            }
+        }
+    }
+
 }
