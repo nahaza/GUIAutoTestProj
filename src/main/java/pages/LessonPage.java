@@ -8,10 +8,8 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.yandex.qatools.htmlelements.element.Button;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+
 
 public class LessonPage extends ParentPage {
 
@@ -87,7 +85,6 @@ public class LessonPage extends ParentPage {
     }
 
     public LessonPage finishNoExamCourseWithoutDoingTests() throws InterruptedException {
-        //List<WebElement> listOfLessons = webDriver.findElements(By.xpath(listOfCourseLessonsLocator));
         for (int i = 0; i < listOfLessons.size(); i++) {
             clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));
             Thread.sleep(2000);
@@ -106,30 +103,73 @@ public class LessonPage extends ParentPage {
     }
 
     public LessonPage countScore() {
+
         return this;
     }
 
-    public LessonPage completeLesson1Course95468() throws InterruptedException {
-        if (isCourseNameLinkPresent("АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)")) {
-            //scrollToWebElement(webDriver.findElement(By.partialLinkText("Быстрый старт")));
-            WebElement lesson1Course95468 = webDriver.findElement(By.partialLinkText("Быстрый старт"));
-            clickOnElement(lesson1Course95468);
-            Thread.sleep(2000);
-            webDriverWait10.until(ExpectedConditions.urlContains("/step/1"));
-            Assert.assertEquals("1.1  Быстрый старт", webDriver.findElement(By.xpath(".//div[@class='top-tools__lesson-name']")).getText());
-            List<WebElement> listOfLessonSteps = webDriver.findElements(By.xpath(".//span[@class='svg-icon null_icon ember-view step-pin-icon__icon']"));
-            for (int j = 0; j < listOfLessonSteps.size(); j++) {
-                clickOnElement(listOfLessonSteps.get(j), "unit 1, lesson " + (j + 1));
-                Thread.sleep(1000);
-            }
-            List<WebElement> listOfLessonTests = webDriver.findElements(By.xpath(".//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']"));
-            clickOnElement(listOfLessonTests.get(1));
-            Thread.sleep(1000);
+//    public LessonPage completeLesson1Course95468() throws InterruptedException {
+//        if (isCourseNameLinkPresent("АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)")) {
+//            //scrollToWebElement(webDriver.findElement(By.partialLinkText("Быстрый старт")));
+//            WebElement lesson1Course95468 = webDriver.findElement(By.partialLinkText("Быстрый старт"));
+//            clickOnElement(lesson1Course95468);
+//            Thread.sleep(2000);
+//            webDriverWait10.until(ExpectedConditions.urlContains("/step/1"));
+//            Assert.assertEquals("1.1  Быстрый старт", webDriver.findElement(By.xpath(".//div[@class='top-tools__lesson-name']")).getText());
+//            List<WebElement> listOfLessonSteps = webDriver.findElements(By.xpath(".//span[@class='svg-icon null_icon ember-view step-pin-icon__icon']"));
+//            for (int j = 0; j < listOfLessonSteps.size(); j++) {
+//                clickOnElement(listOfLessonSteps.get(j), "unit 1, lesson " + (j + 1));
+//                Thread.sleep(1000);
+//            }
+//            List<WebElement> listOfLessonTests = webDriver.findElements(By.xpath(".//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']"));
+//            clickOnElement(listOfLessonTests.get(1));
+//            Thread.sleep(1000);
+//
+//        }
+//        scrollToWebElement(buttonCourseNextStep);
+//        clickOnElement(buttonCourseNextStep);
+//        Assert.assertEquals("1.2 Глагол to be", webDriver.findElement(By.xpath(".//div[@class='top-tools__lesson-name']")).getText());
+//        return this;
+//    }
 
+    public LessonPage doTheTest() {
+        String quizLocator = ".//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']";
+        String questionLocator = ".//div[@class='dnd-quiz__item matching-quiz__item']";
+        String answerLocator = ".//div[@class='drag-and-drop-draggable smooth-dnd-draggable-wrapper ember-view dnd-quiz__item dnd-quiz__has-controls matching-quiz__item']";
+        String[] questionsFile = {"I", "You", "He", "She", "It"};
+        String[] answersFile = {"Я", "Ты, Вы", "Он", "Она", "Оно, Это"};
+        Map<String, String> answerMap = new HashMap<>();
+        for (int i = 0; i < questionsFile.length; i++) {
+            answerMap.put(questionsFile[i], answersFile[i]);
         }
-        scrollToWebElement(buttonCourseNextStep);
-        clickOnElement(buttonCourseNextStep);
-        Assert.assertEquals("1.2 Глагол to be", webDriver.findElement(By.xpath(".//div[@class='top-tools__lesson-name']")).getText());
+        for (int i = 0; i < questionsFile.length; i++) {
+            String textToBe = answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText());
+            if (!answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()).equals(webDriver.findElements(By.xpath(answerLocator)).get(i).getText())) {
+                String fromLocator =
+                        String.format(".//div[@class='smooth-dnd-container vertical drag-and-drop drag-and-replace ember-" +
+                                        "view matching-quiz__right matching-quiz__drag-and-replace']//div[.//span[text()='%s']]" +
+                                        "//span[@class='svg-icon dragndrop_icon ember-view dnd-quiz__item-handle matching-quiz__handle']"
+                                , answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()));
+                String toLocator =
+                        String.format(".//div[@class='smooth-dnd-container vertical drag-and-drop drag-and-replace ember-view matching-" +
+                                        "quiz__right matching-quiz__drag-and-replace']//div[.//span[text()='%s']]//span[@class='svg-" +
+                                        "icon dragndrop_icon ember-view dnd-quiz__item-handle matching-quiz__handle']"
+                                , webDriver.findElements(By.xpath(answerLocator)).get(i).getText());
+                dragAndDropElements(fromLocator, toLocator);
+                if (webDriver.findElements(By.xpath(answerLocator)).get(i).getText().equals(textToBe)) {
+                    logger.info("Element " + webDriver.findElements(By.xpath(answerLocator)).get(i).getText() + " was dropped");
+                } else {
+                    logger.error("Element " +
+                            answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()) + " was not dropped properly");
+                    Assert.fail("Element " +
+                            answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()) + " was not dropped properly");
+                }
+            }
+        }
+        return this;
+    }
+
+    public LessonPage clickOnStep2() {
+        clickOnElement(webDriver.findElement(By.xpath(".//div[@class='m-step-pin ember-view player__step-pin'][2]")));
         return this;
     }
 
