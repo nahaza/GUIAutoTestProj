@@ -2,6 +2,7 @@ package pages;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.rules.Timeout;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -161,18 +162,14 @@ public abstract class ParentPage {
         webDriverWait10.until(ExpectedConditions.elementToBeClickable(webElement));
     }
 
-    public void dragAndDropElements(String fromElementLocator, String toElementLocator, String targetTextToBe) {
+    public void dragAndDropElements(String fromElementLocator, String toElementLocator) {
         Actions actions = new Actions(webDriver);
-        WebElement fromElement = webDriver.findElement(By.xpath(fromElementLocator));
-        WebElement toElement = webDriver.findElement(By.xpath(toElementLocator));
-        actions.dragAndDrop(fromElement, toElement).perform();
-        if (toElement.getText().equals(targetTextToBe)) {
-            logger.info("Element" + toElement.getText() + " was dropped");
-        } else {
-            logger.error("Element was not dropped properly");
-            Assert.fail("Element was not dropped properly");
-        }
+        actions.clickAndHold(webDriver.findElement(By.xpath(fromElementLocator))).build().perform();
+        actions.moveToElement(webDriver.findElement(By.xpath(toElementLocator))).build().perform();
+        actions.moveByOffset(-1, -1).build().perform();
+        actions.release().build().perform();
     }
+
 
     public void selectCheckboxOptionWithValue(String textOfOptionsToBeSelected, String optionsToBeSelectedLocator) {
         String[] listOfOptionsTextToBeSelected = textOfOptionsToBeSelected.split(";");
