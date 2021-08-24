@@ -11,16 +11,6 @@ import org.junit.runner.RunWith;
 public class InvalidLoginTest extends BaseTest {
     @Test
     @Parameters({
-            "veraexpert209+1195675139@gmail.com, 1"
-    })
-    @TestCaseName("doLoginWithValidCred")
-    public void doLoginWithValidCred(String email, String password) {
-        loginPage.loginWithValidCred(email, password)
-                .checkIsSignOutButtonPresent();
-    }
-
-    @Test
-    @Parameters({
             "veraexpert209+1195675139@gmail.com,2"
             , "1veraexpert209+1195675139@gmail.com,1"
             , "1veraexpert209+1195675139@gmail.com,2"

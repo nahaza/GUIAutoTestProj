@@ -40,15 +40,15 @@ public class finishCourseNoDoingTestsNoExamTest extends BaseTest {
     }
 
     @Test
-//    @Parameters({
-//            "veraexpert209+53144@gmail.com, KLS29449"
-//    })
-    public void finish1Lesson(/*String email1, String password2*/) {
+    @Parameters({
+            "veraexpert209+53144@gmail.com, KLS29449"
+    })
+    public void finish1LessonDragAndDrop(String email, String password) {
         loginPage.loginWithValidCred(email, password)
                 .clickOnMyCourseButton()
                 .clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
                 .clickOnButtonContinueCourseOnTheCoursePage()
                 .clickOnStep2()
-                .doTheTest();
+                .doTheTestDragAndDrop();
     }
 }

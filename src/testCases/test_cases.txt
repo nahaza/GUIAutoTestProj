@@ -1,0 +1,131 @@
+TC-1 Sign-up with valid data input
+
+Preconditions: generate unique username, email, password
+
+Steps to reproduce:
+1. Open a browser and go to https://stepik.org/catalog
+2. Click on the Proceed Register button
+3. Enter a valid unique username and email, password in the registration form
+4. Click on the Register button
+
+Expected result:
+New user was created and logged in, redirected to https://stepik.org/users/*.
+Sign out button is present on the Profile menu.
+
+
+
+TC-2 Failed sign-up with invalid data input
+
+Steps to reproduce:
+1. Open a browser and go to https://stepik.org/catalog
+2. Click on the Proceed Register button
+3. Enter invalid username, email, password in the registration form
+4. Click on the Register button
+
+Expected result:
+New user wasn't created and logged in.
+Register button is present
+
+
+
+TC-3 Sign-in with valid credentials
+
+Preconditions: register new user with unique username and email, password
+
+Steps to reproduce:
+1. Open a browser and go to https://stepik.org/catalog
+2. Click on the Proceed Login button
+3. Enter a valid username and password in the login form
+4. Click on the Login button
+
+Expected result:
+The user was logged in and redirected to https://stepik.org/users/*.
+Sign out button is present on the Profile menu.
+
+
+
+TC-4 Failed sign-in with invalid credentials
+
+Steps to reproduce:
+1. Open a browser and go to https://stepik.org/catalog
+2. Click on the Proceed Login button
+3. Enter an invalid username or invalid password in the login form
+4. Click on the Login button
+
+Expected result:
+The user wasn't logged in.
+Login button is present
+Warning invalid credentials message was displayed
+
+
+
+TC-5 Failed sign-in with empty data input
+
+Steps to reproduce:
+1. Open a browser and go to https://stepik.org/catalog
+2. Click on the Proceed Login button
+3. Leave all the login form fields empty
+4. Click on the Login button
+5. Enter a valid username in the login form
+6. Click on the Login button
+
+Expected result:
+New user wasn't logged in. Login button is present
+After step 4 - warning empty username message is displayed. 
+After step 6 - warning empty password message is displayed. 
+
+
+
+TC-6 Search and join unique existent free course by unauthorised user
+
+Steps to reproduce:
+1. Open a browser and go to to https://stepik.org/catalog
+2. On the Search form enter the name of unique existent free course and select free course checkbox
+3. Click on the Search button
+4. Click on the title of unique existent free course
+5. Click on the Join button
+
+Expected result:
+After step 3 - the free course info block is displayed
+Register button is present
+
+
+
+TC-7 Search and join unique existent free course by authorised user
+
+Preconditions: register new user with unique username and email, password
+
+Steps to reproduce:
+1. Open a browser and go to to https://stepik.org/catalog
+2. Sign-in with valid credentials
+3. On the Search form enter the name of unique existent free course and select free course checkbox
+4. Click on the Search button
+5. Click on the title of unique existent free course
+6. Click on the Join button
+
+Expected result:
+After step 2 - the user was logged in and redirected to  https://stepik.org/users/*.
+Sign out button is present on the Profile menu.
+After step 5 - the user was redirected to  https://stepik.org/course/*. The free course info block is displayed
+After step 6 - the user was redirected to https://stepik.org/lesson/*. The course link, Next Step button are displayed
+
+
+
+TC-8 Finish No exam course without doing tests
+
+Preconditions: register new user with unique username, email, password; make it joined some free course with no exam included
+
+Steps to reproduce:
+1. Open a browser and go to to https://stepik.org/catalog
+2. Sign-in with valid credentials
+3. Click on My courses button
+4. Click on the title of specific free course
+5. Click on Continue button
+6. Keep clicking on the Next step button until the very end of the course without doing tests
+
+Expected result:
+After step 2 - the user was logged in and redirected to  https://stepik.org/users/*.
+Sign out button is present on the Profile menu.
+After step 4 - the user was redirected to  https://stepik.org/course/*. The free course info block is displayed
+After step 5 - the user was redirected to https://stepik.org/lesson/*. 
+After step 6 (clicking on the Next step button on the course last lesson last step) - popup modal window with the course finish info is displayed.  

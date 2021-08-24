@@ -22,6 +22,6 @@ public class ValidLoginTest extends BaseTest {
     @Test
     public void doLoginWithValidCred() {
         loginPage.loginWithValidCred(email, password)
-                .checkIsSignOutButtonPresent();
+                .checkIsRedirectToHomePage();
     }
 }
