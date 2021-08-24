@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class LoginPage extends ParentPage {
 
-    @FindBy(xpath = ".//nav[@aria-label='Общая навигация по сайту']")
+    @FindBy(xpath = ".//nav[@class='navbar']")
     private TextBlock headerPanel;
 
     @FindBy(xpath = ".//div[@data-kind='full_course_lists']//h1[text()='Онлайн-курсы']")
@@ -43,7 +43,7 @@ public class LoginPage extends ParentPage {
     @FindBy(xpath = ".//input[@id='id_login_password']")
     private TextInput inputPassword;
 
-    @FindBy(xpath = ".//form[@id='login_form']//button[text()='Войти']")
+    @FindBy(xpath = ".//form[@id='login_form']//button[@class='sign-form__btn button_with-loader ']")
     private Button buttonLogin;
 
     @FindBy(xpath = ".//input[@id='id_registration_full-name']")
@@ -55,7 +55,7 @@ public class LoginPage extends ParentPage {
     @FindBy(xpath = ".//input[@id='id_registration_password']")
     private TextInput inputPasswordRegistrationForm;
 
-    @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
+    @FindBy(xpath = ".//form[@id='registration_form']//button[@class='sign-form__btn button_with-loader ']")
     private Button buttonRegister;
 
     @FindBy(xpath = ".//button[@aria-label='Profile']")

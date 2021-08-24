@@ -7,6 +7,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.yandex.qatools.htmlelements.element.Button;
+import ru.yandex.qatools.htmlelements.element.TextBlock;
 
 import java.util.*;
 
@@ -30,6 +31,9 @@ public class LessonPage extends ParentPage {
 
     @FindBy(xpath = ".//button[@class='submit-submission']")
     private Button submitAnswer;
+
+    @FindBy(xpath = ".//span[@class='lesson__step-title']")
+    private TextBlock lessonStepOnFooter;
 
     private String listOfCourseModulesLocator = ".//div[@class='lesson-sidebar__toc-inner']";
 
@@ -131,7 +135,8 @@ public class LessonPage extends ParentPage {
 //        return this;
 //    }
 
-    public LessonPage doTheTest() {
+    public LessonPage doTheTestDragAndDrop() {
+        Assert.assertEquals("Шаг 2", lessonStepOnFooter.getText());
         String quizLocator = ".//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']";
         String questionLocator = ".//div[@class='dnd-quiz__item matching-quiz__item']";
         String answerLocator = ".//div[@class='drag-and-drop-draggable smooth-dnd-draggable-wrapper ember-view dnd-quiz__item dnd-quiz__has-controls matching-quiz__item']";
@@ -163,6 +168,50 @@ public class LessonPage extends ParentPage {
                     Assert.fail("Element " +
                             answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()) + " was not dropped properly");
                 }
+            }
+        }
+        return this;
+    }
+
+    public LessonPage doTheTestcheckBox() {
+        Assert.assertEquals("Шаг 4", lessonStepOnFooter.getText());
+        String quizLocator = ".//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']";
+        String checkBoxLocator = ".//label[@class='s-checkbox']";
+        List<WebElement> listOfCheckBoxOptions = webDriver.findElements(By.xpath(checkBoxLocator));
+        String[] questionsFile = {"Определенный артикль употребляется только с единственным числом"
+                , "В английском с абстрактными понятиями нужно употреблять нулевой артикль"
+                , "Неопределенный артикль употребляют когда речь идет о неизвестном предмете"
+                , "Неопределенный артикль можно ипользовать только со словами, начинающимися с согласного"};
+        String[] answersFile = {"unchecked", "checked", "checked", "unchecked"};
+        Map<String, String> answerMap = new HashMap<>();
+        for (int i = 0; i < questionsFile.length; i++) {
+            answerMap.put(questionsFile[i], answersFile[i]);
+        }
+        for (int i = 0; i < listOfCheckBoxOptions.size(); i++) {
+            if (answerMap.containsKey(listOfCheckBoxOptions.get(i).getText())) {
+                final List<String> checkboxStatusPossible = Arrays.asList("check", "uncheck");
+//                if (checkboxStatusPossible.contains(requiredUniquePostCheckBoxStatus)) {
+//                    if (checkboxUniquePost.isSelected()) {
+//                        if (requiredUniquePostCheckBoxStatus.equalsIgnoreCase(checkboxStatusPossible.get(0))) {
+//                            logger.info("CheckboxUniquePost keeps being selected");
+//                        } else {
+//                            clickOnElement(checkboxUniquePost);
+//                            webDriverWait10.until(ExpectedConditions.elementSelectionStateToBe(checkboxUniquePost, false));
+//                            logger.info("CheckboxUniquePost was deselected");
+//                        }
+//                    } else {
+//                        if (requiredUniquePostCheckBoxStatus.equalsIgnoreCase(checkboxStatusPossible.get(0))) {
+//                            clickOnElement(checkboxUniquePost);
+//                            webDriverWait10.until(ExpectedConditions.elementSelectionStateToBe(checkboxUniquePost, true));
+//                            logger.info("CheckboxUniquePost was selected");
+//                        } else {
+//                            logger.info("CheckboxUniquePost keeps being not selected");
+//                        }
+//                    }
+//                } else {
+//                    logger.error("Check required uniquePostCheckBoxStatus. Only check, uncheck are possible");
+//                    Assert.fail("Check required uniquePostCheckBoxStatus. Only check, uncheck are possible");
+//                }
             }
         }
         return this;
