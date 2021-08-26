@@ -136,12 +136,14 @@ public class LessonPage extends ParentPage {
 //    }
 
     public LessonPage doTheTestDragAndDrop() {
+
         Assert.assertEquals("Шаг 2", lessonStepOnFooter.getText());
         String quizLocator = ".//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']";
         String questionLocator = ".//div[@class='dnd-quiz__item matching-quiz__item']";
         String answerLocator = ".//div[@class='drag-and-drop-draggable smooth-dnd-draggable-wrapper ember-view dnd-quiz__item dnd-quiz__has-controls matching-quiz__item']";
         String[] questionsFile = {"I", "You", "He", "She", "It"};
         String[] answersFile = {"Я", "Ты, Вы", "Он", "Она", "Оно, Это"};
+        String doAnswerLocator = ".//div[@class='smooth-dnd-container vertical drag-and-drop drag-and-replace ember-view matching-quiz__right matching-quiz__drag-and-replace']//div[.//span[text()='%s']]//span[@class='svg-icon dragndrop_icon ember-view dnd-quiz__item-handle matching-quiz__handle']";
         Map<String, String> answerMap = new HashMap<>();
         for (int i = 0; i < questionsFile.length; i++) {
             answerMap.put(questionsFile[i], answersFile[i]);
@@ -150,15 +152,9 @@ public class LessonPage extends ParentPage {
             String textToBe = answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText());
             if (!answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()).equals(webDriver.findElements(By.xpath(answerLocator)).get(i).getText())) {
                 String fromLocator =
-                        String.format(".//div[@class='smooth-dnd-container vertical drag-and-drop drag-and-replace ember-" +
-                                        "view matching-quiz__right matching-quiz__drag-and-replace']//div[.//span[text()='%s']]" +
-                                        "//span[@class='svg-icon dragndrop_icon ember-view dnd-quiz__item-handle matching-quiz__handle']"
-                                , answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()));
+                        String.format(doAnswerLocator, answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()));
                 String toLocator =
-                        String.format(".//div[@class='smooth-dnd-container vertical drag-and-drop drag-and-replace ember-view matching-" +
-                                        "quiz__right matching-quiz__drag-and-replace']//div[.//span[text()='%s']]//span[@class='svg-" +
-                                        "icon dragndrop_icon ember-view dnd-quiz__item-handle matching-quiz__handle']"
-                                , webDriver.findElements(By.xpath(answerLocator)).get(i).getText());
+                        String.format(doAnswerLocator, webDriver.findElements(By.xpath(answerLocator)).get(i).getText());
                 dragAndDropElements(fromLocator, toLocator);
                 if (webDriver.findElements(By.xpath(answerLocator)).get(i).getText().equals(textToBe)) {
                     logger.info("Element " + webDriver.findElements(By.xpath(answerLocator)).get(i).getText() + " was dropped");

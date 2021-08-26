@@ -16,6 +16,8 @@ import pages.LoginPage;
 
 import java.util.concurrent.TimeUnit;
 
+import static pages.ParentPage.configProperties;
+
 public class BaseTest {
     WebDriver webDriver;
     protected LoginPage loginPage;
@@ -30,7 +32,7 @@ public class BaseTest {
     public void setUp() {
         logger.info("----------" + testName.getMethodName() + " was started-------");
         webDriver = initDriver();
-        webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        webDriver.manage().timeouts().implicitlyWait(configProperties.TIME_FOR_DFFAULT_WAIT(), TimeUnit.SECONDS);
         webDriver.manage().window().maximize();
 
         loginPage = new LoginPage(webDriver);

@@ -1,5 +1,7 @@
 package pages;
 
+import libs.ConfigProperties;
+import org.aeonbits.owner.ConfigFactory;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.rules.Timeout;
@@ -23,7 +25,9 @@ public abstract class ParentPage {
     Logger logger = Logger.getLogger(getClass());
     WebDriver webDriver;
     WebDriverWait webDriverWait10, webDriverWait5;
-    protected final String baseUrl = "stepik.org";
+    public static ConfigProperties configProperties=
+            ConfigFactory.create(ConfigProperties.class);
+    protected final String baseUrl = configProperties.base_url();
 
     protected ParentPage(WebDriver webDriver) {
         this.webDriver = webDriver;
@@ -31,8 +35,8 @@ public abstract class ParentPage {
                 new HtmlElementDecorator(
                         new HtmlElementLocatorFactory(webDriver))
                 , this);
-        webDriverWait10 = new WebDriverWait(webDriver, 10);
-        webDriverWait5 = new WebDriverWait(webDriver, 5);
+        webDriverWait10 = new WebDriverWait(webDriver, configProperties.TIME_FOR_DFFAULT_WAIT());
+        webDriverWait5 = new WebDriverWait(webDriver, configProperties.TIME_FOR_EXPLICIT_WAIT_LOW());
     }
 
     abstract String getRelativeUrl();
