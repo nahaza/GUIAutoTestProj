@@ -25,7 +25,7 @@ public abstract class ParentPage {
     Logger logger = Logger.getLogger(getClass());
     WebDriver webDriver;
     WebDriverWait webDriverWait10, webDriverWait5;
-    public static ConfigProperties configProperties=
+    public static ConfigProperties configProperties =
             ConfigFactory.create(ConfigProperties.class);
     protected final String baseUrl = configProperties.base_url();
 
@@ -66,6 +66,16 @@ public abstract class ParentPage {
             webElement.clear();
             webElement.sendKeys(text);
             logger.info("'" + text + "' was entered in element " + getElementName(webElement));
+        } catch (Exception e) {
+            writeErrorAndStopTest(e);
+        }
+    }
+
+    protected void enterTextToElement(WebElement webElement, String text, String elementName) {
+        try {
+            webElement.clear();
+            webElement.sendKeys(text);
+            logger.info("'" + text + "' was entered in element " + elementName);
         } catch (Exception e) {
             writeErrorAndStopTest(e);
         }

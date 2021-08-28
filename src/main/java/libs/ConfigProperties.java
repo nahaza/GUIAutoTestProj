@@ -10,5 +10,6 @@ public interface ConfigProperties extends Config {
 
 	String base_url();
 	String DATA_FILE();
+	String DATA_FILE_COURSES();
 	String DATA_FILE_PATH();
 }
