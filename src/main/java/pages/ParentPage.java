@@ -4,7 +4,6 @@ import libs.ConfigProperties;
 import org.aeonbits.owner.ConfigFactory;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.rules.Timeout;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -176,10 +175,10 @@ public abstract class ParentPage {
         webDriverWait10.until(ExpectedConditions.elementToBeClickable(webElement));
     }
 
-    public void dragAndDropElements(String fromElementLocator, String toElementLocator) {
+    public void dragAndDropElements(WebElement elementFrom, WebElement elementTo) {
         Actions actions = new Actions(webDriver);
-        actions.clickAndHold(webDriver.findElement(By.xpath(fromElementLocator))).build().perform();
-        actions.moveToElement(webDriver.findElement(By.xpath(toElementLocator))).build().perform();
+        actions.clickAndHold(elementFrom).build().perform();
+        actions.moveToElement(elementTo).build().perform();
         actions.moveByOffset(-1, -1).build().perform();
         actions.release().build().perform();
     }
