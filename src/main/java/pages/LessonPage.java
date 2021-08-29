@@ -128,7 +128,6 @@ public class LessonPage extends ParentPage {
             for (int q = 0; q < listOfLessonQuizes.size(); q++) {
                 numberOfQuizStep.add(Integer.parseInt(listOfLessonQuizes.get(q).getAttribute("data-step-position")));
             }
-            System.out.println(numberOfQuizStep);
             for (int j = 0; j < listOfLessonSteps.size(); j++) {
                 clickOnElement(listOfLessonSteps.get(j), "lesson " + (i + 1) + ", step " + (j + 1));
                 if (numberOfQuizStep.contains(j + 1)) {
@@ -156,6 +155,7 @@ public class LessonPage extends ParentPage {
         return answerMap;
     }
 
+    //all locators will be moved from file "*testData.xls" to this page variables
     public LessonPage doTheTestDragAndDrop(Map<String, String> dataForTests, int step) throws IOException {
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
         String questionLocator = dataForTests.get("questionLocator");

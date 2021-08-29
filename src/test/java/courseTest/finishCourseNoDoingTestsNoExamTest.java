@@ -46,7 +46,8 @@ public class finishCourseNoDoingTestsNoExamTest extends BaseTest {
     @Parameters({
             "veraexpert209+53144@gmail.com, KLS29449"
     })
-    public void finishTest(String email, String password) throws IOException, InterruptedException {
+    //test finishCourse with method finish1LessonDragAndDrop was deleted. This test is not finished completely, but works properly
+    public void finishNoExamCourseDoingTests(String email, String password) throws IOException, InterruptedException {
         loginPage.loginWithValidCred(email, password)
                 .clickOnMyCourseButton()
                 .clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
