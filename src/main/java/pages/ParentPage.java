@@ -1,8 +1,9 @@
 package pages;
 
+import libs.ConfigProperties;
+import org.aeonbits.owner.ConfigFactory;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.rules.Timeout;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -23,7 +24,9 @@ public abstract class ParentPage {
     Logger logger = Logger.getLogger(getClass());
     WebDriver webDriver;
     WebDriverWait webDriverWait10, webDriverWait5;
-    protected final String baseUrl = "stepik.org";
+    public static ConfigProperties configProperties =
+            ConfigFactory.create(ConfigProperties.class);
+    protected final String baseUrl = configProperties.base_url();
 
     protected ParentPage(WebDriver webDriver) {
         this.webDriver = webDriver;
@@ -31,8 +34,8 @@ public abstract class ParentPage {
                 new HtmlElementDecorator(
                         new HtmlElementLocatorFactory(webDriver))
                 , this);
-        webDriverWait10 = new WebDriverWait(webDriver, 10);
-        webDriverWait5 = new WebDriverWait(webDriver, 5);
+        webDriverWait10 = new WebDriverWait(webDriver, configProperties.TIME_FOR_DFFAULT_WAIT());
+        webDriverWait5 = new WebDriverWait(webDriver, configProperties.TIME_FOR_EXPLICIT_WAIT_LOW());
     }
 
     abstract String getRelativeUrl();
@@ -62,6 +65,16 @@ public abstract class ParentPage {
             webElement.clear();
             webElement.sendKeys(text);
             logger.info("'" + text + "' was entered in element " + getElementName(webElement));
+        } catch (Exception e) {
+            writeErrorAndStopTest(e);
+        }
+    }
+
+    protected void enterTextToElement(WebElement webElement, String text, String elementName) {
+        try {
+            webElement.clear();
+            webElement.sendKeys(text);
+            logger.info("'" + text + "' was entered in element " + elementName);
         } catch (Exception e) {
             writeErrorAndStopTest(e);
         }
@@ -162,10 +175,10 @@ public abstract class ParentPage {
         webDriverWait10.until(ExpectedConditions.elementToBeClickable(webElement));
     }
 
-    public void dragAndDropElements(String fromElementLocator, String toElementLocator) {
+    public void dragAndDropElements(WebElement elementFrom, WebElement elementTo) {
         Actions actions = new Actions(webDriver);
-        actions.clickAndHold(webDriver.findElement(By.xpath(fromElementLocator))).build().perform();
-        actions.moveToElement(webDriver.findElement(By.xpath(toElementLocator))).build().perform();
+        actions.clickAndHold(elementFrom).build().perform();
+        actions.moveToElement(elementTo).build().perform();
         actions.moveByOffset(-1, -1).build().perform();
         actions.release().build().perform();
     }

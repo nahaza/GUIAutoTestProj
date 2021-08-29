@@ -1,5 +1,6 @@
 package pages;
 
+import libs.ExcelDriver;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -9,6 +10,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.yandex.qatools.htmlelements.element.Button;
 import ru.yandex.qatools.htmlelements.element.TextBlock;
 
+import java.io.IOException;
 import java.util.*;
 
 
@@ -42,7 +44,7 @@ public class LessonPage extends ParentPage {
     private String listOfLessonStepsOnTopBarLocator = ".//div[@class='player-topbar__step-pins']//div[@class='m-step-pin ember-view player__step-pin']";
 
 
-    private String listOfLessonQuizesOnTopBarLocator = "svg-icon easy-quiz_icon ember-view step-pin-icon__icon";
+    private String listOfLessonQuizesOnTopBarLocator = ".//div[@class='m-step-pin ember-view player__step-pin'][.//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']]";
 
     private String checkboxOptionsLesson1TestStep4Locator = ".//div[@data-type='choice-quiz']//span[@class='choice-quiz-show__option s-checkbox__label']";
 
@@ -111,56 +113,67 @@ public class LessonPage extends ParentPage {
         return this;
     }
 
-//    public LessonPage completeLesson1Course95468() throws InterruptedException {
-//        if (isCourseNameLinkPresent("АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)")) {
-//            //scrollToWebElement(webDriver.findElement(By.partialLinkText("Быстрый старт")));
-//            WebElement lesson1Course95468 = webDriver.findElement(By.partialLinkText("Быстрый старт"));
-//            clickOnElement(lesson1Course95468);
-//            Thread.sleep(2000);
-//            webDriverWait10.until(ExpectedConditions.urlContains("/step/1"));
-//            Assert.assertEquals("1.1  Быстрый старт", webDriver.findElement(By.xpath(".//div[@class='top-tools__lesson-name']")).getText());
-//            List<WebElement> listOfLessonSteps = webDriver.findElements(By.xpath(".//span[@class='svg-icon null_icon ember-view step-pin-icon__icon']"));
-//            for (int j = 0; j < listOfLessonSteps.size(); j++) {
-//                clickOnElement(listOfLessonSteps.get(j), "unit 1, lesson " + (j + 1));
-//                Thread.sleep(1000);
-//            }
-//            List<WebElement> listOfLessonTests = webDriver.findElements(By.xpath(".//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']"));
-//            clickOnElement(listOfLessonTests.get(1));
-//            Thread.sleep(1000);
-//
-//        }
-//        scrollToWebElement(buttonCourseNextStep);
-//        clickOnElement(buttonCourseNextStep);
-//        Assert.assertEquals("1.2 Глагол to be", webDriver.findElement(By.xpath(".//div[@class='top-tools__lesson-name']")).getText());
-//        return this;
-//    }
 
-    public LessonPage doTheTestDragAndDrop() {
-        Assert.assertEquals("Шаг 2", lessonStepOnFooter.getText());
-        String quizLocator = ".//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']";
-        String questionLocator = ".//div[@class='dnd-quiz__item matching-quiz__item']";
-        String answerLocator = ".//div[@class='drag-and-drop-draggable smooth-dnd-draggable-wrapper ember-view dnd-quiz__item dnd-quiz__has-controls matching-quiz__item']";
-        String[] questionsFile = {"I", "You", "He", "She", "It"};
-        String[] answersFile = {"Я", "Ты, Вы", "Он", "Она", "Оно, Это"};
-        Map<String, String> answerMap = new HashMap<>();
-        for (int i = 0; i < questionsFile.length; i++) {
-            answerMap.put(questionsFile[i], answersFile[i]);
+    public LessonPage finishNoExamCourseWithDoingTests(String specificCourseTitle) throws InterruptedException, IOException {
+        Map<String, String> listFoCoursesId = ExcelDriver.getData(ParentPage.configProperties.DATA_FILE_COURSES(), "coursesId");
+        String courseId = listFoCoursesId.get(specificCourseTitle);
+        for (int i = 0; i < 2; i++) {
+            clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));
+            Thread.sleep(2000);
+            webDriverWait10.until(ExpectedConditions.urlContains("/step/1"));
+            logger.info("Lesson " + listOfLessons.get(i).getText());
+            List<WebElement> listOfLessonSteps = webDriver.findElements(By.xpath(listOfLessonStepsOnTopBarLocator));
+            ArrayList<Integer> numberOfQuizStep = new ArrayList<>();
+            List<WebElement> listOfLessonQuizes = webDriver.findElements(By.xpath(listOfLessonQuizesOnTopBarLocator));
+            for (int q = 0; q < listOfLessonQuizes.size(); q++) {
+                numberOfQuizStep.add(Integer.parseInt(listOfLessonQuizes.get(q).getAttribute("data-step-position")));
+            }
+            for (int j = 0; j < listOfLessonSteps.size(); j++) {
+                clickOnElement(listOfLessonSteps.get(j), "lesson " + (i + 1) + ", step " + (j + 1));
+                if (numberOfQuizStep.contains(j + 1)) {
+                    doTheTests(courseId, i + 1, j + 1);
+                }
+                webDriverWait10.until(ExpectedConditions.titleContains("Шаг " + (j + 1)));
+            }
         }
-        for (int i = 0; i < questionsFile.length; i++) {
-            String textToBe = answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText());
-            if (!answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()).equals(webDriver.findElements(By.xpath(answerLocator)).get(i).getText())) {
+        scrollToWebElement(buttonCourseNextStep);
+        clickOnElement(buttonCourseNextStep);
+        return this;
+//        //Assert.assertTrue(webDriver.findElement(By.xpath(".//div[@class='modal-popup__container']")).isDisplayed());
+    }
+
+    public Map<String, String> getMapOfAnswersFromFile(Map<String, String> dataForTests) {
+        String questionsFromFile = dataForTests.get("questions");
+        String answersFromFile = dataForTests.get("answers");
+        String[] questionsListFromFile = questionsFromFile.split(";");
+        String[] answersListFromFile = answersFromFile.split(";");
+        String doAnswerLocator = dataForTests.get("doAnswerLocator");
+        Map<String, String> answerMap = new HashMap<>();
+        for (int i = 0; i < questionsListFromFile.length; i++) {
+            answerMap.put(questionsListFromFile[i], answersListFromFile[i]);
+        }
+        return answerMap;
+    }
+
+    //all locators will be moved from file "*testData.xls" to this page variables
+    public LessonPage doTheTestDragAndDrop(Map<String, String> dataForTests, int step) throws IOException {
+        Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
+        String questionLocator = dataForTests.get("questionLocator");
+        String answerLocator = dataForTests.get("answerLocator");
+        String doAnswerLocator = dataForTests.get("doAnswerLocator");
+        Map<String, String> answerMap = getMapOfAnswersFromFile(dataForTests);
+        List<WebElement> listOfAnswersOnThePage = webDriver.findElements(By.xpath(questionLocator));
+        for (int i = 0; i < listOfAnswersOnThePage.size(); i++) {
+            String answerToBe = answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText());
+            if (!webDriver.findElements(By.xpath(answerLocator)).get(i).getText()
+                    .contains(answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()))) {
                 String fromLocator =
-                        String.format(".//div[@class='smooth-dnd-container vertical drag-and-drop drag-and-replace ember-" +
-                                        "view matching-quiz__right matching-quiz__drag-and-replace']//div[.//span[text()='%s']]" +
-                                        "//span[@class='svg-icon dragndrop_icon ember-view dnd-quiz__item-handle matching-quiz__handle']"
-                                , answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()));
+                        String.format(doAnswerLocator, answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()));
                 String toLocator =
-                        String.format(".//div[@class='smooth-dnd-container vertical drag-and-drop drag-and-replace ember-view matching-" +
-                                        "quiz__right matching-quiz__drag-and-replace']//div[.//span[text()='%s']]//span[@class='svg-" +
-                                        "icon dragndrop_icon ember-view dnd-quiz__item-handle matching-quiz__handle']"
-                                , webDriver.findElements(By.xpath(answerLocator)).get(i).getText());
-                dragAndDropElements(fromLocator, toLocator);
-                if (webDriver.findElements(By.xpath(answerLocator)).get(i).getText().equals(textToBe)) {
+                        String.format(doAnswerLocator, webDriver.findElements(By.xpath(answerLocator)).get(i).getText());
+                dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
+                        , webDriver.findElements(By.xpath(answerLocator)).get(i));
+                if (webDriver.findElements(By.xpath(answerLocator)).get(i).getText().contains(answerToBe)) {
                     logger.info("Element " + webDriver.findElements(By.xpath(answerLocator)).get(i).getText() + " was dropped");
                 } else {
                     logger.error("Element " +
@@ -173,53 +186,78 @@ public class LessonPage extends ParentPage {
         return this;
     }
 
-    public LessonPage doTheTestcheckBox() {
-        Assert.assertEquals("Шаг 4", lessonStepOnFooter.getText());
-        String quizLocator = ".//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']";
-        String checkBoxLocator = ".//label[@class='s-checkbox']";
-        List<WebElement> listOfCheckBoxOptions = webDriver.findElements(By.xpath(checkBoxLocator));
-        String[] questionsFile = {"Определенный артикль употребляется только с единственным числом"
-                , "В английском с абстрактными понятиями нужно употреблять нулевой артикль"
-                , "Неопределенный артикль употребляют когда речь идет о неизвестном предмете"
-                , "Неопределенный артикль можно ипользовать только со словами, начинающимися с согласного"};
-        String[] answersFile = {"unchecked", "checked", "checked", "unchecked"};
-        Map<String, String> answerMap = new HashMap<>();
-        for (int i = 0; i < questionsFile.length; i++) {
-            answerMap.put(questionsFile[i], answersFile[i]);
+    public LessonPage doTheTests(String idCourse, int lesson, int step) throws IOException {
+        Map<String, String> dataForTests = ExcelDriver.getData(
+                ParentPage.configProperties.DATA_FILE_PATH() + idCourse + "testData.xls"
+                , String.format("lesson%s_step%s", lesson, step));
+        String actionToDoTheTest = dataForTests.get("action");
+        if (actionToDoTheTest.equals("dragAndDrop")) {
+            doTheTestDragAndDrop(dataForTests, step);
+        } else if (actionToDoTheTest.equals("checkbox")) {
+            doTheTestCheckbox(dataForTests, step);
+        } else if (actionToDoTheTest.equals("input")) {
+            doTheInput(dataForTests, step);
+        } else if (actionToDoTheTest.equals("radiobutton")) {
+            doTheRadiobutton(dataForTests, step);
         }
+        return this;
+    }
+
+    public LessonPage doTheTestCheckbox(Map<String, String> dataForTests, int step) {
+        Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
+        String optionsLocator = dataForTests.get("optionsLocator");
+        String doAnswerLocator = dataForTests.get("doAnswerLocator");
+        String answersFromFile = dataForTests.get("answers");
+        String[] answersListFromFile = answersFromFile.split(";");
+        List<WebElement> listOfCheckBoxOptions = webDriver.findElements(By.xpath(optionsLocator));
         for (int i = 0; i < listOfCheckBoxOptions.size(); i++) {
-            if (answerMap.containsKey(listOfCheckBoxOptions.get(i).getText())) {
-                final List<String> checkboxStatusPossible = Arrays.asList("check", "uncheck");
-//                if (checkboxStatusPossible.contains(requiredUniquePostCheckBoxStatus)) {
-//                    if (checkboxUniquePost.isSelected()) {
-//                        if (requiredUniquePostCheckBoxStatus.equalsIgnoreCase(checkboxStatusPossible.get(0))) {
-//                            logger.info("CheckboxUniquePost keeps being selected");
-//                        } else {
-//                            clickOnElement(checkboxUniquePost);
-//                            webDriverWait10.until(ExpectedConditions.elementSelectionStateToBe(checkboxUniquePost, false));
-//                            logger.info("CheckboxUniquePost was deselected");
-//                        }
-//                    } else {
-//                        if (requiredUniquePostCheckBoxStatus.equalsIgnoreCase(checkboxStatusPossible.get(0))) {
-//                            clickOnElement(checkboxUniquePost);
-//                            webDriverWait10.until(ExpectedConditions.elementSelectionStateToBe(checkboxUniquePost, true));
-//                            logger.info("CheckboxUniquePost was selected");
-//                        } else {
-//                            logger.info("CheckboxUniquePost keeps being not selected");
-//                        }
-//                    }
-//                } else {
-//                    logger.error("Check required uniquePostCheckBoxStatus. Only check, uncheck are possible");
-//                    Assert.fail("Check required uniquePostCheckBoxStatus. Only check, uncheck are possible");
-//                }
+            for (int j = 0; j < answersListFromFile.length; j++) {
+                if (listOfCheckBoxOptions.get(i).getText().contains(answersListFromFile[j])) {
+                    clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocator
+                            , listOfCheckBoxOptions.get(i).getText())))
+                            , "Checkbox option " + listOfCheckBoxOptions.get(i).getText());
+                }
             }
         }
         return this;
     }
 
-    public LessonPage clickOnStep2() {
-        clickOnElement(webDriver.findElement(By.xpath(".//div[@class='m-step-pin ember-view player__step-pin'][2]")));
+    public LessonPage doTheInput(Map<String, String> dataForTests, int step) throws IOException {
+        Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
+        String questionLocator = dataForTests.get("questionLocator");
+        String answerLocator = dataForTests.get("answerLocator");
+        Map<String, String> answerMap = getMapOfAnswersFromFile(dataForTests);
+        List<WebElement> listOfAnswersOnThePage = webDriver.findElements(By.xpath(questionLocator));
+        for (int i = 0; i < listOfAnswersOnThePage.size(); i++) {
+            String textToEnter = answerMap.get(listOfAnswersOnThePage.get(i).getText());
+            enterTextToElement(webDriver.findElements(By.xpath(answerLocator)).get(i)
+                    , textToEnter, " input " + listOfAnswersOnThePage.get(i).getText());
+
+        }
         return this;
     }
+
+    public LessonPage doTheRadiobutton(Map<String, String> dataForTests, int step) throws IOException {
+        Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
+        String questionLocator = dataForTests.get("questionLocator");
+        String answerLocator = dataForTests.get("answerLocator");
+        String doAnswerLocator = dataForTests.get("doAnswerLocator");
+        List<WebElement> listOfQuestionsOnThePage = webDriver.findElements(By.xpath(questionLocator));
+        List<WebElement> listOfAnswerOptions = webDriver.findElements(By.xpath(answerLocator));
+        List<WebElement> listOfRadiobuttonAnswerOptions = webDriver.findElements(By.xpath(doAnswerLocator));
+        Map<String, String> answerMap = getMapOfAnswersFromFile(dataForTests);
+        for (int i = 0; i < listOfQuestionsOnThePage.size(); i++) {
+            for (int j = 1; j < listOfAnswerOptions.size(); j++) {// options[0] is not relevant answer
+                String questionsIs = listOfQuestionsOnThePage.get(i).getText();
+                String answerToBe = answerMap.get(questionsIs);
+                if (listOfAnswerOptions.get(j).getText().contains(answerToBe)) {
+                    clickOnElement(webDriver.findElements(By.xpath(String.format(doAnswerLocator, questionsIs))).get(j),
+                            "Radiobutton " + answerToBe);
+                }
+            }
+        }
+        return this;
+    }
+
 
 }

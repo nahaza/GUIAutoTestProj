@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 
+
+import java.io.IOException;
 import java.util.Map;
 
 
@@ -39,16 +41,17 @@ public class finishCourseNoDoingTestsNoExamTest extends BaseTest {
 
     }
 
+
     @Test
     @Parameters({
             "veraexpert209+53144@gmail.com, KLS29449"
     })
-    public void finish1LessonDragAndDrop(String email, String password) {
+    //test finishCourse with method finish1LessonDragAndDrop was deleted. This test is not finished completely, but works properly
+    public void finishNoExamCourseDoingTests(String email, String password) throws IOException, InterruptedException {
         loginPage.loginWithValidCred(email, password)
                 .clickOnMyCourseButton()
                 .clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
                 .clickOnButtonContinueCourseOnTheCoursePage()
-                .clickOnStep2()
-                .doTheTestDragAndDrop();
+                .finishNoExamCourseWithDoingTests(specificCourseTitle);
     }
 }
