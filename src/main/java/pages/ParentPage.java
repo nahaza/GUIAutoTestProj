@@ -87,7 +87,6 @@ public abstract class ParentPage {
         } catch (Exception e) {
             writeErrorAndStopTest(e);
         }
-        //webDriverWait10.withMessage("Proceed to next test");
     }
 
     protected void clickOnElement(WebElement webElement, String elementName) {
