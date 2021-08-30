@@ -14,7 +14,7 @@ import java.util.Map;
 
 
 @RunWith(JUnitParamsRunner.class)
-public class finishCourseNoDoingTestsNoExamTest extends BaseTest {
+public class finishCourse extends BaseTest {
     private String specificCourseTitle = "АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)";
 
     private String email;
@@ -43,11 +43,8 @@ public class finishCourseNoDoingTestsNoExamTest extends BaseTest {
 
 
     @Test
-    @Parameters({
-            "veraexpert209+53144@gmail.com, KLS29449"
-    })
-    //test finishCourse with method finish1LessonDragAndDrop was deleted. This test is not finished completely, but works properly
-    public void finishNoExamCourseDoingTests(String email, String password) throws IOException, InterruptedException {
+    //test finishCourse with method finish1LessonDragAndDrop was deleted.
+    public void finishNoExamCourseDoingTests() throws IOException, InterruptedException {
         loginPage.loginWithValidCred(email, password)
                 .clickOnMyCourseButton()
                 .clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)

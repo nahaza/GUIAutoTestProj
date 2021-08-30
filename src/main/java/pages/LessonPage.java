@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.yandex.qatools.htmlelements.element.Button;
+import ru.yandex.qatools.htmlelements.element.Image;
 import ru.yandex.qatools.htmlelements.element.TextBlock;
 
 import java.io.IOException;
@@ -25,17 +26,44 @@ public class LessonPage extends ParentPage {
     private String courseNameLinkLocator = ".//a[@title='%s']";
 
     //    @FindBy(xpath = ".//button[@class='lesson__next-btn button has-icon']")
-    @FindBy(xpath = ".//div[@class='lesson__footer-nav-buttons']//span[text()='Следующий шаг']")
+    @FindBy(xpath = ".//div[@class='lesson__footer-nav-buttons']")
     private Button buttonCourseNextStep;
 
     @FindBy(xpath = ".//a[@class='ember-link ember-view attempt__wrapper_next-link button success']")
     private Button buttonNextStepAfterCorrectAnswerSubmission;
 
     @FindBy(xpath = ".//button[@class='submit-submission']")
-    private Button submitAnswer;
+    private Button buttonSubmitAnswer;
 
     @FindBy(xpath = ".//span[@class='lesson__step-title']")
     private TextBlock lessonStepOnFooter;
+
+    @FindBy(xpath = ".//div[@class='attempt__message']//span")
+    private TextBlock testResultMessage;
+
+    @FindBy(xpath = ".//span[@class='attempt-message_wrong']")
+    private TextBlock testNegativeResultMessage;
+
+    @FindBy(xpath = ".//span[@class='svg-icon wrong_icon ember-view attempt-wrapper__result-icon']")
+    private Image testNegativeResultIcon;
+
+    @FindBy(xpath = ".//span[@class='attempt-message_correct']")
+    private TextBlock testPositiveResultMessage;
+
+    @FindBy(xpath = ".//button[@class='again-btn white']")
+    private Button buttonStartTestAgainAfterSuccess;
+
+    @FindBy(xpath = ".//button[@class='again-btn success']")
+    private Button buttonStartAgainAfterFailure;
+
+    @FindBy(xpath = ".//div[@class='attempt__score-info']")
+    private TextBlock scoreInfoBlock;
+
+    @FindBy(xpath = ".//div[@class='attempt__score-info']//strong")
+    private TextBlock scoreGetInTestFooter;
+
+    @FindBy(xpath = ".//div[@class='top-tools__progress'][2]//span")
+    private TextBlock scoreGetInTestHeader;
 
     private String listOfCourseModulesLocator = ".//div[@class='lesson-sidebar__toc-inner']";
 
@@ -44,9 +72,45 @@ public class LessonPage extends ParentPage {
     private String listOfLessonStepsOnTopBarLocator = ".//div[@class='player-topbar__step-pins']//div[@class='m-step-pin ember-view player__step-pin']";
 
 
-    private String listOfLessonQuizesOnTopBarLocator = ".//div[@class='m-step-pin ember-view player__step-pin'][.//span[@class='svg-icon easy-quiz_icon ember-view step-pin-icon__icon']]";
+    private String listOfLessonQuizesOnTopBarLocator = ".//div[@class='m-step-pin ember-view player__step-pin'][.//span[@class='svg-icon easy-quiz_" +
+            "icon ember-view step-pin-icon__icon']]";
 
     private String checkboxOptionsLesson1TestStep4Locator = ".//div[@data-type='choice-quiz']//span[@class='choice-quiz-show__option s-checkbox__label']";
+
+    private String questionLocatorDragAndDrop = ".//div[@class='dnd-quiz__item matching-quiz__item']";
+
+    private String answerLocatorDragAndDrop = ".//div[@class='drag-and-drop-draggable smooth-dnd-draggable-wrapper ember-view dnd-quiz__item dnd-quiz__has-" +
+            "controls matching-quiz__item']";
+
+    private String answerLocatorDragAndDropSort = ".//div[@class='dnd-quiz__item dnd-quiz__has-controls sorting-quiz__item']";
+
+    private String doAnswerLocatorDragAndDrop = ".//div[@class='smooth-dnd-container vertical drag-and-drop drag-and-replace ember-view matching-quiz__" +
+            "right matching-quiz__drag-and-replace']//div[.//span[contains(text(), '%s')]]//span[@class='svg-icon dragndrop_icon ember-view dnd-quiz__item-" +
+            "handle matching-quiz__handle']";
+
+    private String doAnswerLocatorDragAndDropSort = ".//div[@class='smooth-dnd-container vertical drag-and-drop ember-view sorting-quiz__drag-and-drop']//" +
+            "div[.//span[contains(text(), '%s')]]//span[@class='svg-icon dragndrop_icon ember-view dnd-quiz__item-handle sorting-quiz__handle']";
+
+    private String optionsLocatorCheckbox = ".//span[@class='choice-quiz-show__option s-checkbox__label']";
+
+    private String doAnswerLocatorCheckbox = ".//div[@data-type='choice-quiz']//label[@class='s-checkbox'][.//span[contains(text(),'%s')]]//span[@class='s-" +
+            "checkbox__circle']";
+
+    private String questionLocatorInput = ".//span[@class='fill-blanks-quiz__text']";
+
+    private String answerLocatorInput = ".//input[@class='st-input fill-blanks-quiz__input']";
+
+    private String questionLocatorRadiobutton = ".//table[@class='table-quiz__table']//tbody//td[@data-katex]";
+
+    private String answerLocatorRadiobutton = ".//table[@class='table-quiz__table']//th[@data-katex]";
+
+    private String doAnswerLocatorRadiobutton = ".//table[@class='table-quiz__table']//tr[.//td[text()='%s']]/td";
+
+    private String doAnswerLocatorRadiobuttonOneOption = ".//div[@data-type='choice-quiz']//label[@class='s-" +
+            "radio'][.//span[contains(text(), '%s')]]//span[@class='s-radio__border']";
+
+    private String answerLocatorSingleInput = ".//html[@dir='ltr']";/*".//body[@class='rich-text-editor__content cke_editable cke_editable_" +
+            "themed cke_contents_ltr cke_show_borders']";*/
 
     protected List<WebElement> listOfLessons = webDriver.findElements(By.xpath(listOfCourseLessonsLocator));
 
@@ -69,7 +133,6 @@ public class LessonPage extends ParentPage {
 
     public LessonPage checkIsRedirectToLessonPage() {
         checkUrlWithPattern();
-        //checkIsSignOutButtonPresent();
         return this;
     }
 
@@ -109,7 +172,6 @@ public class LessonPage extends ParentPage {
     }
 
     public LessonPage countScore() {
-
         return this;
     }
 
@@ -117,7 +179,7 @@ public class LessonPage extends ParentPage {
     public LessonPage finishNoExamCourseWithDoingTests(String specificCourseTitle) throws InterruptedException, IOException {
         Map<String, String> listFoCoursesId = ExcelDriver.getData(ParentPage.configProperties.DATA_FILE_COURSES(), "coursesId");
         String courseId = listFoCoursesId.get(specificCourseTitle);
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 4; i++) {
             clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));
             Thread.sleep(2000);
             webDriverWait10.until(ExpectedConditions.urlContains("/step/1"));
@@ -136,10 +198,16 @@ public class LessonPage extends ParentPage {
                 webDriverWait10.until(ExpectedConditions.titleContains("Шаг " + (j + 1)));
             }
         }
+        // lessons from 5 to the very last one were omitted
+        clickOnElement(listOfLessons.get(listOfLessons.size() - 1), "lesson " + (listOfLessons.size()));
+        Thread.sleep(2000);
+        webDriverWait10.until(ExpectedConditions.urlContains("/step/1"));
+        List<WebElement> listOfLastLessonSteps = webDriver.findElements(By.xpath(listOfLessonStepsOnTopBarLocator));
+        clickOnElement(listOfLastLessonSteps.get(listOfLastLessonSteps.size() - 1), "lesson " + listOfLastLessonSteps.size());
         scrollToWebElement(buttonCourseNextStep);
         clickOnElement(buttonCourseNextStep);
+        Assert.assertTrue(webDriver.findElement(By.xpath(".//div[@class='modal-popup__container']")).isDisplayed());
         return this;
-//        //Assert.assertTrue(webDriver.findElement(By.xpath(".//div[@class='modal-popup__container']")).isDisplayed());
     }
 
     public Map<String, String> getMapOfAnswersFromFile(Map<String, String> dataForTests) {
@@ -155,37 +223,6 @@ public class LessonPage extends ParentPage {
         return answerMap;
     }
 
-    //all locators will be moved from file "*testData.xls" to this page variables
-    public LessonPage doTheTestDragAndDrop(Map<String, String> dataForTests, int step) throws IOException {
-        Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
-        String questionLocator = dataForTests.get("questionLocator");
-        String answerLocator = dataForTests.get("answerLocator");
-        String doAnswerLocator = dataForTests.get("doAnswerLocator");
-        Map<String, String> answerMap = getMapOfAnswersFromFile(dataForTests);
-        List<WebElement> listOfAnswersOnThePage = webDriver.findElements(By.xpath(questionLocator));
-        for (int i = 0; i < listOfAnswersOnThePage.size(); i++) {
-            String answerToBe = answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText());
-            if (!webDriver.findElements(By.xpath(answerLocator)).get(i).getText()
-                    .contains(answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()))) {
-                String fromLocator =
-                        String.format(doAnswerLocator, answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()));
-                String toLocator =
-                        String.format(doAnswerLocator, webDriver.findElements(By.xpath(answerLocator)).get(i).getText());
-                dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
-                        , webDriver.findElements(By.xpath(answerLocator)).get(i));
-                if (webDriver.findElements(By.xpath(answerLocator)).get(i).getText().contains(answerToBe)) {
-                    logger.info("Element " + webDriver.findElements(By.xpath(answerLocator)).get(i).getText() + " was dropped");
-                } else {
-                    logger.error("Element " +
-                            answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()) + " was not dropped properly");
-                    Assert.fail("Element " +
-                            answerMap.get(webDriver.findElements(By.xpath(questionLocator)).get(i).getText()) + " was not dropped properly");
-                }
-            }
-        }
-        return this;
-    }
-
     public LessonPage doTheTests(String idCourse, int lesson, int step) throws IOException {
         Map<String, String> dataForTests = ExcelDriver.getData(
                 ParentPage.configProperties.DATA_FILE_PATH() + idCourse + "testData.xls"
@@ -196,66 +233,150 @@ public class LessonPage extends ParentPage {
         } else if (actionToDoTheTest.equals("checkbox")) {
             doTheTestCheckbox(dataForTests, step);
         } else if (actionToDoTheTest.equals("input")) {
-            doTheInput(dataForTests, step);
+            doTheTestInput(dataForTests, step);
         } else if (actionToDoTheTest.equals("radiobutton")) {
-            doTheRadiobutton(dataForTests, step);
+            doTheTestRadiobutton(dataForTests, step);
+        } else if (actionToDoTheTest.equals("radiobuttonOneOption")) {
+            doTheRadiobuttonOneOption(dataForTests, step);
+        } else if (actionToDoTheTest.equals("inputSingleInput")) {
+            doTheTestSingleInput(dataForTests, step);
+        } else if (actionToDoTheTest.equals("dragAndDropSort")) {
+            doTheTestDragAndDropSort(dataForTests, step);
         }
+        return this;
+    }
+
+    public LessonPage doTheTestDragAndDrop(Map<String, String> dataForTests, int step) throws IOException {
+        Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
+        Map<String, String> answerMap = getMapOfAnswersFromFile(dataForTests);
+        List<WebElement> listOfQuestionsOnThePage = webDriver.findElements(By.xpath(questionLocatorDragAndDrop));
+        for (int i = 0; i < listOfQuestionsOnThePage.size(); i++) {
+            String answerToBe = answerMap.get(webDriver.findElements(By.xpath(questionLocatorDragAndDrop)).get(i).getText());
+            if (!webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i).getText()
+                    .contains(answerMap.get(webDriver.findElements(By.xpath(questionLocatorDragAndDrop)).get(i).getText()))) {
+                String fromLocator =
+                        String.format(doAnswerLocatorDragAndDrop, answerMap.get(webDriver.findElements(By.xpath(questionLocatorDragAndDrop)).get(i).getText()));
+                dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
+                        , webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i));
+                if (webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i).getText().contains(answerToBe)) {
+                    logger.info("Element " + webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i).getText() + " was dropped");
+                } else {
+                    logger.error("Element " +
+                            answerMap.get(webDriver.findElements(By.xpath(questionLocatorDragAndDrop)).get(i).getText()) + " was not dropped properly");
+                    Assert.fail("Element " +
+                            answerMap.get(webDriver.findElements(By.xpath(questionLocatorDragAndDrop)).get(i).getText()) + " was not dropped properly");
+                }
+            }
+        }
+        clickOnElement(buttonSubmitAnswer);
+        Assert.assertTrue(isElementPresent(testResultMessage, "Test result message "));
+        return this;
+    }
+
+    public LessonPage doTheTestDragAndDropSort(Map<String, String> dataForTests, int step) throws IOException {
+        Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
+        String answersFromFile = dataForTests.get("answers");
+        String[] answersListFromFile = answersFromFile.split(";");
+        List<WebElement> listOfAnswersOnThePage = webDriver.findElements(By.xpath(answerLocatorDragAndDropSort));
+        for (int i = 0; i < listOfAnswersOnThePage.size(); i++) {
+            String answerToBe = answersListFromFile[i];
+            if (!webDriver.findElements(By.xpath(answerLocatorDragAndDropSort)).get(i).getText()
+                    .contains(answerToBe)) {
+                String fromLocator =
+                        String.format(doAnswerLocatorDragAndDropSort, answerToBe);
+                dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
+                        , webDriver.findElements(By.xpath(answerLocatorDragAndDropSort)).get(i));
+                if (webDriver.findElements(By.xpath(answerLocatorDragAndDropSort)).get(i).getText().contains(answerToBe)) {
+                    logger.info("Element " + webDriver.findElements(By.xpath(answerLocatorDragAndDropSort)).get(i).getText() + " was dropped");
+                } else {
+                    logger.error("Element " +
+                            answerToBe + " was not dropped properly");
+                    Assert.fail("Element " +
+                            answerToBe + " was not dropped properly");
+                }
+            }
+        }
+        clickOnElement(buttonSubmitAnswer);
+        Assert.assertTrue(isElementPresent(testResultMessage, "Test result message "));
         return this;
     }
 
     public LessonPage doTheTestCheckbox(Map<String, String> dataForTests, int step) {
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
-        String optionsLocator = dataForTests.get("optionsLocator");
-        String doAnswerLocator = dataForTests.get("doAnswerLocator");
         String answersFromFile = dataForTests.get("answers");
         String[] answersListFromFile = answersFromFile.split(";");
-        List<WebElement> listOfCheckBoxOptions = webDriver.findElements(By.xpath(optionsLocator));
+        List<WebElement> listOfCheckBoxOptions = webDriver.findElements(By.xpath(optionsLocatorCheckbox));
         for (int i = 0; i < listOfCheckBoxOptions.size(); i++) {
             for (int j = 0; j < answersListFromFile.length; j++) {
                 if (listOfCheckBoxOptions.get(i).getText().contains(answersListFromFile[j])) {
-                    clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocator
-                            , listOfCheckBoxOptions.get(i).getText())))
+                    clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocatorCheckbox
+                            , answersListFromFile[j])))
                             , "Checkbox option " + listOfCheckBoxOptions.get(i).getText());
                 }
             }
         }
+        clickOnElement(buttonSubmitAnswer);
+        Assert.assertTrue(isElementPresent(testResultMessage, "Test result message "));
         return this;
     }
 
-    public LessonPage doTheInput(Map<String, String> dataForTests, int step) throws IOException {
+
+    //work in progress
+    public LessonPage doTheTestSingleInput(Map<String, String> dataForTests, int step) throws IOException {
+        webDriverWait10.until(ExpectedConditions.textToBe(By.xpath(".//span[@class='lesson__step-title']"), String.format("Шаг %s", step)));
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
-        String questionLocator = dataForTests.get("questionLocator");
-        String answerLocator = dataForTests.get("answerLocator");
+        String answersFromFile = dataForTests.get("answers");
+        enterTextToElement(webDriver.findElement(By.xpath(answerLocatorSingleInput))
+                , answersFromFile, "Single input ");
+        clickOnElement(buttonCourseNextStep);
+        return this;
+    }
+
+
+    public LessonPage doTheTestInput(Map<String, String> dataForTests, int step) throws IOException {
+        Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
         Map<String, String> answerMap = getMapOfAnswersFromFile(dataForTests);
-        List<WebElement> listOfAnswersOnThePage = webDriver.findElements(By.xpath(questionLocator));
+        List<WebElement> listOfAnswersOnThePage = webDriver.findElements(By.xpath(questionLocatorInput));
         for (int i = 0; i < listOfAnswersOnThePage.size(); i++) {
             String textToEnter = answerMap.get(listOfAnswersOnThePage.get(i).getText());
-            enterTextToElement(webDriver.findElements(By.xpath(answerLocator)).get(i)
+            enterTextToElement(webDriver.findElements(By.xpath(answerLocatorInput)).get(i)
                     , textToEnter, " input " + listOfAnswersOnThePage.get(i).getText());
 
         }
+        clickOnElement(buttonSubmitAnswer);
+        Assert.assertTrue(isElementPresent(testResultMessage, "Test result message "));
         return this;
     }
 
-    public LessonPage doTheRadiobutton(Map<String, String> dataForTests, int step) throws IOException {
+    public LessonPage doTheTestRadiobutton(Map<String, String> dataForTests, int step) throws IOException {
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
-        String questionLocator = dataForTests.get("questionLocator");
-        String answerLocator = dataForTests.get("answerLocator");
-        String doAnswerLocator = dataForTests.get("doAnswerLocator");
-        List<WebElement> listOfQuestionsOnThePage = webDriver.findElements(By.xpath(questionLocator));
-        List<WebElement> listOfAnswerOptions = webDriver.findElements(By.xpath(answerLocator));
-        List<WebElement> listOfRadiobuttonAnswerOptions = webDriver.findElements(By.xpath(doAnswerLocator));
+        List<WebElement> listOfQuestionsOnThePage = webDriver.findElements(By.xpath(questionLocatorRadiobutton));
+        List<WebElement> listOfAnswerOptions = webDriver.findElements(By.xpath(answerLocatorRadiobutton));
+        List<WebElement> listOfRadiobuttonAnswerOptions = webDriver.findElements(By.xpath(doAnswerLocatorRadiobutton));
         Map<String, String> answerMap = getMapOfAnswersFromFile(dataForTests);
         for (int i = 0; i < listOfQuestionsOnThePage.size(); i++) {
             for (int j = 1; j < listOfAnswerOptions.size(); j++) {// options[0] is not relevant answer
                 String questionsIs = listOfQuestionsOnThePage.get(i).getText();
                 String answerToBe = answerMap.get(questionsIs);
                 if (listOfAnswerOptions.get(j).getText().contains(answerToBe)) {
-                    clickOnElement(webDriver.findElements(By.xpath(String.format(doAnswerLocator, questionsIs))).get(j),
+                    clickOnElement(webDriver.findElements(By.xpath(String.format(doAnswerLocatorRadiobutton, questionsIs))).get(j),
                             "Radiobutton " + answerToBe);
                 }
             }
         }
+        clickOnElement(buttonSubmitAnswer);
+        Assert.assertTrue(isElementPresent(testResultMessage, "Test result message "));
+        return this;
+    }
+
+    public LessonPage doTheRadiobuttonOneOption(Map<String, String> dataForTests, int step) {
+        Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
+        String answersFromFile = dataForTests.get("answers");
+        clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocatorRadiobuttonOneOption
+                , answersFromFile)))
+                , "Radiobutton option " + answersFromFile);
+        clickOnElement(buttonSubmitAnswer);
+        Assert.assertTrue(isElementPresent(testResultMessage, "Test result message "));
         return this;
     }
 
