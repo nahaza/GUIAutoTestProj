@@ -331,7 +331,6 @@ public class LessonPage extends ParentPage {
         webDriverWait10.until(ExpectedConditions.textToBe(By.xpath(".//span[@class='lesson__step-title']"), String.format("Шаг %s", step)));
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
         String answersFromFile = dataForTests.get("answers");
-        WebElement frame = webDriver.findElement(By.xpath(".//iframe"));
         WebElement textArea = webDriver.findElement(By.tagName("textarea"));
         enterTextToElement(textArea, answersFromFile,"textArea");
         webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
@@ -351,7 +350,6 @@ public class LessonPage extends ParentPage {
         return this;
     }
 
-    //work in Progress
     public LessonPage doTheTestRadiobutton(Map<String, String> dataForTests, int step) throws IOException, InterruptedException {
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
         List<WebElement> listOfQuestionsOnThePage = webDriver.findElements(By.xpath(questionLocatorRadiobutton));
