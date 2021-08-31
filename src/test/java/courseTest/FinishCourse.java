@@ -14,7 +14,7 @@ import java.util.Map;
 
 
 @RunWith(JUnitParamsRunner.class)
-public class finishCourse extends BaseTest {
+public class FinishCourse extends BaseTest {
     private String specificCourseTitle = "АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)";
 
     private String email;
