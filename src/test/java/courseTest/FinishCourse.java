@@ -49,6 +49,7 @@ public class FinishCourse extends BaseTest {
                 .clickOnMyCourseButton()
                 .clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
                 .clickOnButtonContinueCourseOnTheCoursePage()
-                .finishNoExamCourseWithDoingTests(specificCourseTitle);
+                .finishNoExamCourseWithDoingTests(specificCourseTitle)
+        .clickOnSignOutButtonAfterJoinCourse();
     }
 }

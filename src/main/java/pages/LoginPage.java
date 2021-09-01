@@ -21,15 +21,9 @@ public class LoginPage extends ParentPage {
 
     @FindBy(xpath = ".//nav[@class='navbar']")
     private TextBlock headerPanel;
-
-    @FindBy(xpath = ".//div[@data-kind='full_course_lists']//h1[text()='Онлайн-курсы']")
-    private TextBlock infoPanel;
-
-    @FindBy(xpath = ".//button[@class='navbar__submenu-toggler st-button_style_none']")
-    private Button buttonChangeLanguage;
-
-    @FindBy(xpath = ".//button[text()='English']")
-    private Button buttonEnglishLanguage;
+//
+//    @FindBy(xpath = ".//div[@data-kind='full_course_lists']//h1[text()='Онлайн-курсы']")
+//    private TextBlock infoPanel;
 
     @FindBy(xpath = ".//a[@href='/catalog?auth=login']")
     private Button buttonToProceedLogin;
@@ -64,16 +58,7 @@ public class LoginPage extends ParentPage {
     @FindBy(xpath = ".//ul[@class='menu menu_theme_popup-dark menu_right drop-down-content ember-view']")
     private Select dropDownProfile;
 
-    @FindBy(xpath = ".//button[text()='Выход']")
-    private Button buttonSignOut;
-
-    @FindBy(xpath = ".//div[@data-theme='confirm']//div[@class='modal-popup__container']")
-    private TextBlock signOutModalPopUp;
-
-    @FindBy(xpath = ".//div[@data-theme='confirm']//button[text()='OK']")
-    private TextBlock buttonSignOutConfirm;
-
-    @FindBy(xpath = ".//form[@id='login_form']//li[text()='E-mail адрес и/или пароль не верны.']")
+    @FindBy(xpath = ".//form[@id='login_form']//li[@role='alert']")
     private TextBlock invalidCredErrorMessage;
 
     @FindBy(xpath = ".//input[@class='search-form__input ']")
@@ -85,7 +70,7 @@ public class LoginPage extends ParentPage {
     @FindBy(xpath = ".//div[@class='search-form__input-wrapper']//div[@class='drop-down__body']")
     private Select dropDownSearchInput;
 
-    @FindBy(xpath = ".//div[@class='search-form__form']//span[text()='Бесплатные']")
+    @FindBy(xpath = ".//label[@class='form-checkbox'][2]")
     private CheckBox checkBoxFreeCourse;
 
     @FindBy(xpath = ".//footer[@class='page-footer page-footer-modern ember-view page_footer']")
@@ -144,12 +129,12 @@ public class LoginPage extends ParentPage {
     }
 
     public LoginPage checkIsLoginButtonPresent() {
-        Assert.assertTrue(isElementPresent(buttonLogin));
+        Assert.assertTrue("Login button is not present", isElementPresent(buttonLogin));
         return this;
     }
 
     public LoginPage checkIsInvalidCredErrorMessagePresent() {
-        Assert.assertTrue(isElementPresent(invalidCredErrorMessage));
+        Assert.assertTrue("No error messsage displayed",isElementPresent(invalidCredErrorMessage));
         return this;
     }
 

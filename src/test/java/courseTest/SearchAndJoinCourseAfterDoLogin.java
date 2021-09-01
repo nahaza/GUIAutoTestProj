@@ -9,6 +9,7 @@ import java.util.Map;
 public class SearchAndJoinCourseAfterDoLogin extends BaseTest {
     String email;
     String password;
+    String specificCourseTitle = "Программирование на Python";
 
     @Before
     public void generateCredentials() {
@@ -21,12 +22,13 @@ public class SearchAndJoinCourseAfterDoLogin extends BaseTest {
     public void searchAndJoinUniqueExistentFreeCourseByLoggedInUser() {
         loginPage.loginWithValidCred(email, password)
                 .checkIsRedirectToHomePage()
-                .searchAndJoinUniqueExistentFreeCourseByLoggedInUser("АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)")
+                .searchAndJoinUniqueExistentFreeCourseByLoggedInUser(specificCourseTitle)
                 .checkIsRedirectToCoursePage()
                 .checkIsCourseFreeInfoPresent()
                 .clickOnButtonJoinTheCourseLoggedInUser()
                 .checkIsRedirectToLessonPage()
-                .checkIsCourseNamePresent("АА - Активный Английский от Екатерины Зак (для начинающих А0-А1)")
-                .checkIsCourseNextStepPresent();
+                .checkIsCourseNamePresent(specificCourseTitle)
+                .checkIsCourseNextStepPresent()
+                .clickOnSignOutButtonAfterJoinCourse();
     }
 }
