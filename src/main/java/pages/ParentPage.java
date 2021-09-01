@@ -17,6 +17,7 @@ import ru.yandex.qatools.htmlelements.loader.decorator.HtmlElementDecorator;
 import ru.yandex.qatools.htmlelements.loader.decorator.HtmlElementLocatorFactory;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
@@ -64,6 +65,7 @@ public abstract class ParentPage {
         try {
             webElement.clear();
             webElement.sendKeys(text);
+            webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
             logger.info("'" + text + "' was entered in element " + getElementName(webElement));
         } catch (Exception e) {
             writeErrorAndStopTest(e);
@@ -74,6 +76,7 @@ public abstract class ParentPage {
         try {
             webElement.clear();
             webElement.sendKeys(text);
+            webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
             logger.info("'" + text + "' was entered in element " + elementName);
         } catch (Exception e) {
             writeErrorAndStopTest(e);
@@ -83,6 +86,7 @@ public abstract class ParentPage {
     protected void clickOnElement(WebElement webElement) {
         try {
             webElement.click();
+            webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
             logger.info(getElementName(webElement) + " element was clicked");
         } catch (Exception e) {
             writeErrorAndStopTest(e);
@@ -92,11 +96,11 @@ public abstract class ParentPage {
     protected void clickOnElement(WebElement webElement, String elementName) {
         try {
             webElement.click();
+            webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
             logger.info(elementName + " element was clicked");
         } catch (Exception e) {
             writeErrorAndStopTest(e);
         }
-        //webDriverWait10.withMessage("Proceed to next test");
     }
 
     private void writeErrorAndStopTest(Exception e) {
@@ -180,6 +184,7 @@ public abstract class ParentPage {
         actions.moveToElement(elementTo).build().perform();
         actions.moveByOffset(-1, -1).build().perform();
         actions.release().build().perform();
+        webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 
 
