@@ -1,6 +1,6 @@
 package pages;
 
-import libs.TestData;
+
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.yandex.qatools.htmlelements.element.*;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class HomePage extends ParentPage {
 
@@ -159,6 +160,7 @@ public class HomePage extends ParentPage {
         WebElement specificCourseLink = scrollToCourseWithSpecificTitleInResults(
                 specificCourseLocator, listOfCoursesInSearchResultLocator, specificCourseTitle);
         clickOnElement(specificCourseLink, "specificCourseLink");
+        webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         webDriverWait10.until(ExpectedConditions.urlContains("course"));
         webDriverWait10.until(ExpectedConditions.visibilityOf(buttonProfile));
 

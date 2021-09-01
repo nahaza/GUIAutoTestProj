@@ -23,14 +23,14 @@ public class LessonPage extends ParentPage {
     @FindBy(xpath = ".//button[@aria-label='Profile']")
     private Button buttonProfile;
 
-//    @FindBy(xpath = ".//button[text()='Выход']")
-//    private Button buttonSignOut;
-
     @FindBy(xpath = ".//ul[@class='menu menu_theme_popup-dark menu_right drop-down-content ember-view']")
     private Select dropDownProfile;
 
     @FindBy(xpath = ".//form[@id='login_form']//button[@class='sign-form__btn button_with-loader ']")
     private Button buttonLogin;
+
+    @FindBy(xpath = "ember-view navbar__auth navbar__auth_login st-link st-link_style_button")
+    private Button buttonProceedLogin;
 
     @FindBy(xpath = ".//li[@class='menu-item'][7]//button")
     private Button buttonSignOut;
@@ -41,8 +41,8 @@ public class LessonPage extends ParentPage {
     @FindBy(xpath = ".//div[@data-theme='confirm']//button[text()='OK']")
     private TextBlock buttonSignOutConfirm;
 
-    @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
-    private Button buttonRegister;
+//    @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
+//    private Button buttonRegister;
 
     private String courseNameLinkLocator = ".//a[@title='%s']";
 
@@ -85,6 +85,12 @@ public class LessonPage extends ParentPage {
     @FindBy(xpath = ".//div[@class='top-tools__progress'][2]//span")
     private TextBlock scoreGetInTestHeader;
 
+    @FindBy(xpath = ".//div[@class='modal-popup__container']")
+    private Button finishModalPopup;
+
+    @FindBy(xpath = ".//button[@class='modal-popup__close']")
+    private Button closeFinishModalPopup;
+
     private String listOfCourseModulesLocator = ".//div[@class='lesson-sidebar__toc-inner']";
 
     private String listOfCourseLessonsLocator = ".//a[contains(@class, 'ember-view lesson-sidebar__lesson')]";
@@ -105,7 +111,7 @@ public class LessonPage extends ParentPage {
     private String answerLocatorDragAndDropSort = ".//div[@class='dnd-quiz__item dnd-quiz__has-controls sorting-quiz__item']";
 
     private String doAnswerLocatorDragAndDrop = ".//div[@class='smooth-dnd-container vertical drag-and-drop drag-and-replace ember-view matching-quiz__" +
-            "right matching-quiz__drag-and-replace']//div[.//span[contains(text(), '%s')]]//span[@class='svg-icon dragndrop_icon ember-view dnd-quiz__item-" +
+            "right matching-quiz__drag-and-replace']//div[.//span[contains(text(), " + "\"%s\"" + ")]]//span[@class='svg-icon dragndrop_icon ember-view dnd-quiz__item-" +
             "handle matching-quiz__handle']";
 
     private String doAnswerLocatorDragAndDropSort = ".//div[@class='smooth-dnd-container vertical drag-and-drop ember-view sorting-quiz__drag-and-drop']//" +
@@ -124,10 +130,11 @@ public class LessonPage extends ParentPage {
 
     private String answerLocatorRadiobutton = ".//table[@class='table-quiz__table']//th[@data-katex]";
 
-    private String doAnswerLocatorRadiobutton = ".//table[@class='table-quiz__table']//tr[.//td[contains(text(), '%s')]]/td";
+    private String answerLocatorRadiobuttonOneOption = ".//span[@class='choice-quiz-show__option s-radio__label']";
 
-    private String doAnswerLocatorRadiobuttonOneOption = ".//div[@data-type='choice-quiz']//label[@class='s-" +
-            "radio'][.//span[contains(text(), '%s')]]//span[@class='s-radio__border']";
+    private String doAnswerLocatorRadiobutton = ".//table[@class='table-quiz__table']//tr[.//td[contains(text(), " + "\"%s\"" + ")]]/td";
+
+    private String doAnswerLocatorRadiobuttonOneOption = ".//div[@data-type='choice-quiz']//label[@class='s-radio'][.//span[contains(text(), " + "\"%s\"" + ")]]//span[@class='s-radio__border']";
 
     private String answerLocatorSingleInput = ".//html[@dir='ltr']";/*".//body[@class='rich-text-editor__content cke_editable cke_editable_" +
             "themed cke_contents_ltr cke_show_borders']";*/
@@ -197,7 +204,7 @@ public class LessonPage extends ParentPage {
         }
         scrollToWebElement(buttonCourseNextStep);
         clickOnElement(buttonCourseNextStep);
-        Assert.assertTrue("Modal popup is not displayed", webDriver.findElement(By.xpath(".//div[@class='modal-popup__container']")).isDisplayed());
+        Assert.assertTrue("Modal popup is not displayed", isElementPresent(finishModalPopup));
         logger.info("Finish course modal popup is displayed");
         return this;
     }
@@ -231,7 +238,10 @@ public class LessonPage extends ParentPage {
         }
         scrollToWebElement(buttonCourseNextStep);
         clickOnElement(buttonCourseNextStep);
-        Assert.assertTrue(webDriver.findElement(By.xpath(".//div[@class='modal-popup__container']")).isDisplayed());
+        Assert.assertTrue("Modal popup is not displayed", isElementPresent(finishModalPopup));
+        logger.info("Finish course modal popup is displayed");
+        clickOnElement(closeFinishModalPopup);
+        clickOnSignOutButtonAfterJoinCourse();
         return this;
     }
 
@@ -270,11 +280,12 @@ public class LessonPage extends ParentPage {
             doTheTestInputInTextArea(dataForTests, step);
         }
         clickOnElement(buttonSubmitAnswer);
+        webDriverWait5.until(ExpectedConditions.visibilityOf(testResultMessage));
         Assert.assertTrue(isElementPresent(testResultMessage, "Test result message "));
         return this;
     }
 
-    public LessonPage doTheTestDragAndDrop(Map<String, String> dataForTests, int step) throws IOException {
+    public LessonPage doTheTestDragAndDrop(Map<String, String> dataForTests, int step) throws IOException, InterruptedException {
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
         Map<String, String> answerMap = getMapOfAnswersFromFile(dataForTests);
         List<WebElement> listOfQuestionsOnThePage = webDriver.findElements(By.xpath(questionLocatorDragAndDrop));
@@ -286,6 +297,7 @@ public class LessonPage extends ParentPage {
                         String.format(doAnswerLocatorDragAndDrop, answerMap.get(webDriver.findElements(By.xpath(questionLocatorDragAndDrop)).get(i).getText()));
                 dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
                         , webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i));
+                Thread.sleep(3000);
                 if (webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i).getText().contains(answerToBe)) {
                     logger.info("Element " + webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i).getText() + " was dropped");
                 } else {
@@ -312,7 +324,7 @@ public class LessonPage extends ParentPage {
                         String.format(doAnswerLocatorDragAndDropSort, answerToBe);
                 dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
                         , webDriver.findElements(By.xpath(answerLocatorDragAndDropSort)).get(i));
-                Thread.sleep(2000);
+                Thread.sleep(3000);
                 if (webDriver.findElements(By.xpath(answerLocatorDragAndDropSort)).get(i).getText().contains(answerToBe)) {
                     logger.info("Element " + webDriver.findElements(By.xpath(answerLocatorDragAndDropSort)).get(i).getText() + " was dropped");
                 } else {
@@ -353,6 +365,7 @@ public class LessonPage extends ParentPage {
         webDriver.switchTo().frame(frame);
         WebElement body = webDriver.findElement(By.tagName("body"));
         body.sendKeys(answersFromFile);
+        webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
         webDriver.switchTo().defaultContent();
         webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
@@ -363,7 +376,7 @@ public class LessonPage extends ParentPage {
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
         String answersFromFile = dataForTests.get("answers");
         WebElement textArea = webDriver.findElement(By.tagName("textarea"));
-        enterTextToElement(textArea, answersFromFile,"textArea");
+        enterTextToElement(textArea, answersFromFile, "textArea");
         webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
@@ -395,21 +408,26 @@ public class LessonPage extends ParentPage {
                 if (listOfAnswerOptions.get(j).getText().contains(answerToBe)) {
                     clickOnElement(webDriver.findElements(By.xpath(String.format(doAnswerLocatorRadiobutton, questionsIs))).get(j),
                             "Radiobutton " + answerToBe);
-                    Thread.sleep(2000);
                     webDriverWait5.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
                 }
             }
         }
+        webDriverWait5.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 
     public LessonPage doTheRadiobuttonOneOption(Map<String, String> dataForTests, int step) {
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
         String answersFromFile = dataForTests.get("answers");
-        clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocatorRadiobuttonOneOption
-                , answersFromFile)))
-                , "Radiobutton one option " + answersFromFile);
-        webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
+        List<WebElement> listOfAnswerOptions = webDriver.findElements(By.xpath(answerLocatorRadiobuttonOneOption));
+        for (int i = 0; i < listOfAnswerOptions.size(); i++) {
+            if (listOfAnswerOptions.get(i).getText().contains(answersFromFile)) {
+                clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocatorRadiobuttonOneOption
+                        , answersFromFile)))
+                        , "Radiobutton one option " + answersFromFile);
+                webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+            }
+        }
         return this;
     }
 

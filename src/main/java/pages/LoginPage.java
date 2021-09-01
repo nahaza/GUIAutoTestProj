@@ -15,6 +15,7 @@ import ru.yandex.qatools.htmlelements.element.CheckBox;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 
 public class LoginPage extends ParentPage {
@@ -96,6 +97,7 @@ public class LoginPage extends ParentPage {
     public void openLoginPage() {
         try {
             webDriver.get("https://stepik.org/catalog");
+            webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
             logger.info("Landing page was opened");
         } catch (Exception e) {
             logger.error("Cannot work with LandingPage" + e);
