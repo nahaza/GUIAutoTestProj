@@ -10,10 +10,12 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import ru.yandex.qatools.htmlelements.element.Button;
 import ru.yandex.qatools.htmlelements.element.Image;
+import ru.yandex.qatools.htmlelements.element.Select;
 import ru.yandex.qatools.htmlelements.element.TextBlock;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 public class LessonPage extends ParentPage {
@@ -21,12 +23,29 @@ public class LessonPage extends ParentPage {
     @FindBy(xpath = ".//button[@aria-label='Profile']")
     private Button buttonProfile;
 
-    @FindBy(xpath = ".//button[text()='Выход']")
+//    @FindBy(xpath = ".//button[text()='Выход']")
+//    private Button buttonSignOut;
+
+    @FindBy(xpath = ".//ul[@class='menu menu_theme_popup-dark menu_right drop-down-content ember-view']")
+    private Select dropDownProfile;
+
+    @FindBy(xpath = ".//form[@id='login_form']//button[@class='sign-form__btn button_with-loader ']")
+    private Button buttonLogin;
+
+    @FindBy(xpath = ".//li[@class='menu-item'][7]//button")
     private Button buttonSignOut;
+
+    @FindBy(xpath = ".//div[@data-theme='confirm']//div[@class='modal-popup__container']")
+    private TextBlock signOutModalPopUp;
+
+    @FindBy(xpath = ".//div[@data-theme='confirm']//button[text()='OK']")
+    private TextBlock buttonSignOutConfirm;
+
+    @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
+    private Button buttonRegister;
 
     private String courseNameLinkLocator = ".//a[@title='%s']";
 
-    //    @FindBy(xpath = ".//button[@class='lesson__next-btn button has-icon']")
     @FindBy(xpath = ".//div[@class='lesson__footer-nav-buttons']")
     private Button buttonCourseNextStep;
 
@@ -137,6 +156,16 @@ public class LessonPage extends ParentPage {
         return this;
     }
 
+    public void clickOnSignOutButtonAfterJoinCourse() {
+        clickOnElement(buttonProfile);
+        webDriverWait10.until(ExpectedConditions.visibilityOf(dropDownProfile));
+        clickOnElement(buttonSignOut);
+        webDriverWait10.until(ExpectedConditions.visibilityOf(signOutModalPopUp));
+        clickOnElement(buttonSignOutConfirm);
+        Assert.assertTrue("Login button is not present in the Profile menu"
+                , isElementPresent(buttonLogin));
+    }
+
     public boolean isCourseNameLinkPresent(String courseName) {
         return isElementPresent(webDriver.findElement(By.xpath(String.format(
                 courseNameLinkLocator, courseName))), "courseNameLink");
@@ -168,7 +197,8 @@ public class LessonPage extends ParentPage {
         }
         scrollToWebElement(buttonCourseNextStep);
         clickOnElement(buttonCourseNextStep);
-        Assert.assertTrue(webDriver.findElement(By.xpath(".//div[@class='modal-popup__container']")).isDisplayed());
+        Assert.assertTrue("Modal popup is not displayed", webDriver.findElement(By.xpath(".//div[@class='modal-popup__container']")).isDisplayed());
+        logger.info("Finish course modal popup is displayed");
         return this;
     }
 
@@ -210,7 +240,6 @@ public class LessonPage extends ParentPage {
         String answersFromFile = dataForTests.get("answers");
         String[] questionsListFromFile = questionsFromFile.split(";");
         String[] answersListFromFile = answersFromFile.split(";");
-        //String doAnswerLocator = dataForTests.get("doAnswerLocator");
         Map<String, String> answerMap = new HashMap<>();
         for (int i = 0; i < questionsListFromFile.length; i++) {
             answerMap.put(questionsListFromFile[i], answersListFromFile[i]);
@@ -294,6 +323,7 @@ public class LessonPage extends ParentPage {
                 }
             }
         }
+        webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 
@@ -311,6 +341,7 @@ public class LessonPage extends ParentPage {
                 }
             }
         }
+        webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 
@@ -347,6 +378,7 @@ public class LessonPage extends ParentPage {
             enterTextToElement(webDriver.findElements(By.xpath(answerLocatorInput)).get(i)
                     , textToEnter, " input " + listOfAnswersOnThePage.get(i).getText());
         }
+        webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 
@@ -354,14 +386,11 @@ public class LessonPage extends ParentPage {
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
         List<WebElement> listOfQuestionsOnThePage = webDriver.findElements(By.xpath(questionLocatorRadiobutton));
         List<WebElement> listOfAnswerOptions = webDriver.findElements(By.xpath(answerLocatorRadiobutton));
-        //List<WebElement> listOfRadiobuttonAnswerOptions = webDriver.findElements(By.xpath(doAnswerLocatorRadiobutton));
         Map<String, String> answerMap = getMapOfAnswersFromFile(dataForTests);
         for (int i = 0; i < listOfQuestionsOnThePage.size(); i++) {
             for (int j = 1; j < listOfAnswerOptions.size(); j++) {// options[0] is not relevant answer
                 String questionsIs = listOfQuestionsOnThePage.get(i).getText();
-                logger.info(questionsIs+"!!");
                 Assert.assertTrue(answerMap.containsKey(questionsIs));
-                logger.info(answerMap.entrySet());
                 String answerToBe = answerMap.get(questionsIs);
                 if (listOfAnswerOptions.get(j).getText().contains(answerToBe)) {
                     clickOnElement(webDriver.findElements(By.xpath(String.format(doAnswerLocatorRadiobutton, questionsIs))).get(j),
@@ -379,7 +408,8 @@ public class LessonPage extends ParentPage {
         String answersFromFile = dataForTests.get("answers");
         clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocatorRadiobuttonOneOption
                 , answersFromFile)))
-                , "Radiobutton option " + answersFromFile);
+                , "Radiobutton one option " + answersFromFile);
+        webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 

@@ -12,7 +12,6 @@ import java.util.Map;
 
 public class HomePage extends ParentPage {
 
-//    @FindBy(xpath = ".//a[@class='ember-link ember-view navbar__link st-link']")
     @FindBy(xpath = ".//header//a[text()='Мои курсы']")
     private Button buttonMyCourses;
 
@@ -22,7 +21,7 @@ public class HomePage extends ParentPage {
     @FindBy(xpath = ".//ul[@class='menu menu_theme_popup-dark menu_right drop-down-content ember-view']")
     private Select dropDownProfile;
 
-    @FindBy(xpath = ".//button[text()='Выход']")
+    @FindBy(xpath = ".//li[@class='menu-item'][7]//button")
     private Button buttonSignOut;
 
     @FindBy(xpath = ".//div[@data-theme='confirm']//div[@class='modal-popup__container']")
@@ -31,8 +30,11 @@ public class HomePage extends ParentPage {
     @FindBy(xpath = ".//div[@data-theme='confirm']//button[text()='OK']")
     private TextBlock buttonSignOutConfirm;
 
-    @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
+    @FindBy(xpath = ".//form[@id='registration_form']//button[@class='sign-form__btn button_with-loader ']")
     private Button buttonRegister;
+
+    @FindBy(xpath = ".//form[@id='login_form']//button[@class='sign-form__btn button_with-loader ']")
+    private Button buttonLogin;
 
     @FindBy(xpath = ".//input[@class='search-form__input ']")
     private TextInput inputSearchForm;
@@ -46,7 +48,7 @@ public class HomePage extends ParentPage {
     @FindBy(xpath = ".//div[@class='search-form__input-wrapper']//div[@class='drop-down__body']")
     private Select dropDownSearchInput;
 
-    @FindBy(xpath = ".//div[@class='search-form__form']//span[text()='Бесплатные']")
+    @FindBy(xpath = ".//label[@class='form-checkbox'][2]")
     private CheckBox checkBoxFreeCourse;
 
     @FindBy(xpath = ".//nav[@aria-label='Общая навигация по сайту']")
@@ -107,7 +109,23 @@ public class HomePage extends ParentPage {
         clickOnElement(buttonSignOut);
         webDriverWait10.until(ExpectedConditions.visibilityOf(signOutModalPopUp));
         clickOnElement(buttonSignOutConfirm);
+        Assert.assertTrue("Register button is not present in the Profile menu"
+                , isElementPresent(buttonRegister));
+    }
+
+    public void clickOnSignOutButtonAfterLogin() {
+        clickOnElement(buttonSignOut);
+        webDriverWait10.until(ExpectedConditions.visibilityOf(signOutModalPopUp));
+        clickOnElement(buttonSignOutConfirm);
         Assert.assertTrue("Login button is not present in the Profile menu"
+                , isElementPresent(buttonLogin));
+    }
+
+    public void clickOnSignOutButtonAfterRegister() {
+        clickOnElement(buttonSignOut);
+        webDriverWait10.until(ExpectedConditions.visibilityOf(signOutModalPopUp));
+        clickOnElement(buttonSignOutConfirm);
+        Assert.assertTrue("Register button is not present in the Profile menu"
                 , isElementPresent(buttonRegister));
     }
 
