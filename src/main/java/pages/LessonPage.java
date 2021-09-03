@@ -3,14 +3,13 @@ package pages;
 import libs.ExcelDriver;
 import org.junit.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import pageWithElements.HeaderMenu;
 import ru.yandex.qatools.htmlelements.element.Button;
 import ru.yandex.qatools.htmlelements.element.Image;
-import ru.yandex.qatools.htmlelements.element.Select;
 import ru.yandex.qatools.htmlelements.element.TextBlock;
 
 import java.io.IOException;
@@ -19,32 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 
 public class LessonPage extends ParentPage {
-
-    @FindBy(xpath = ".//button[@aria-label='Profile']")
-    private Button buttonProfile;
-
-    @FindBy(xpath = ".//ul[@class='menu menu_theme_popup-dark menu_right drop-down-content ember-view']")
-    private Select dropDownProfile;
-
-    @FindBy(xpath = ".//form[@id='login_form']//button[@class='sign-form__btn button_with-loader ']")
-    private Button buttonLogin;
-
-    @FindBy(xpath = "ember-view navbar__auth navbar__auth_login st-link st-link_style_button")
-    private Button buttonProceedLogin;
-
-    @FindBy(xpath = ".//li[@class='menu-item'][7]//button")
-    private Button buttonSignOut;
-
-    @FindBy(xpath = ".//div[@data-theme='confirm']//div[@class='modal-popup__container']")
-    private TextBlock signOutModalPopUp;
-
-    @FindBy(xpath = ".//div[@data-theme='confirm']//button[text()='OK']")
-    private TextBlock buttonSignOutConfirm;
-
-//    @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
-//    private Button buttonRegister;
-
-    private String courseNameLinkLocator = ".//a[@title='%s']";
 
     @FindBy(xpath = ".//div[@class='lesson__footer-nav-buttons']")
     private Button buttonCourseNextStep;
@@ -90,6 +63,8 @@ public class LessonPage extends ParentPage {
 
     @FindBy(xpath = ".//button[@class='modal-popup__close']")
     private Button closeFinishModalPopup;
+
+    private String courseNameLinkLocator = ".//a[@title='%s']";
 
     private String listOfCourseModulesLocator = ".//div[@class='lesson-sidebar__toc-inner']";
 
@@ -146,31 +121,16 @@ public class LessonPage extends ParentPage {
         super(webDriver);
     }
 
+    public HeaderMenu headerMenu = new HeaderMenu(webDriver);
+
     @Override
     String getRelativeUrl() {
         return "/lesson";
     }
 
-    public LessonPage checkIsSignOutButtonPresent() {
-        clickOnElement(buttonProfile);
-        Assert.assertTrue("SignOut is not present in the Profile menu", isElementPresent(buttonSignOut));
-        return this;
-    }
-
-
     public LessonPage checkIsRedirectToLessonPage() {
         checkUrlWithPattern();
         return this;
-    }
-
-    public void clickOnSignOutButtonAfterJoinCourse() {
-        clickOnElement(buttonProfile);
-        webDriverWait10.until(ExpectedConditions.visibilityOf(dropDownProfile));
-        clickOnElement(buttonSignOut);
-        webDriverWait10.until(ExpectedConditions.visibilityOf(signOutModalPopUp));
-        clickOnElement(buttonSignOutConfirm);
-        Assert.assertTrue("Login button is not present in the Profile menu"
-                , isElementPresent(buttonLogin));
     }
 
     public boolean isCourseNameLinkPresent(String courseName) {
@@ -241,7 +201,7 @@ public class LessonPage extends ParentPage {
         Assert.assertTrue("Modal popup is not displayed", isElementPresent(finishModalPopup));
         logger.info("Finish course modal popup is displayed");
         clickOnElement(closeFinishModalPopup);
-        clickOnSignOutButtonAfterJoinCourse();
+        headerMenu.clickOnSignOutButtonAfterJoinCourse();
         return this;
     }
 
@@ -430,6 +390,5 @@ public class LessonPage extends ParentPage {
         }
         return this;
     }
-
 
 }

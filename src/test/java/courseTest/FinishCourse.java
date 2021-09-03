@@ -30,9 +30,9 @@ public class FinishCourse extends BaseTest {
     @Test
     public void finishNoExamCourseNotDoingTests() throws InterruptedException {
         loginPage.loginWithValidCred(email, password)
-                .checkIsRedirectToHomePage()
-                .clickOnMyCourseButton()
-                .clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
+                .checkIsRedirectToHomePage();
+                headerMenu.clickOnMyCourseButton();
+                homePage.clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
                 .checkIsRedirectToCoursePage()
                 .clickOnButtonContinueCourseOnTheCoursePage()
                 .checkIsRedirectToLessonPage()
@@ -45,9 +45,9 @@ public class FinishCourse extends BaseTest {
     @Test
     //test finishCourse with method finish1LessonDragAndDrop was deleted.
     public void finishNoExamCourseDoingTests() throws IOException, InterruptedException {
-        loginPage.loginWithValidCred(email, password)
-                .clickOnMyCourseButton()
-                .clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
+        loginPage.loginWithValidCred(email, password);
+                headerMenu.clickOnMyCourseButton();
+                homePage.clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
                 .clickOnButtonContinueCourseOnTheCoursePage()
                 .finishNoExamCourseWithDoingTests(specificCourseTitle);
     }
