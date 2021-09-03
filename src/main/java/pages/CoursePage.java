@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import pageWithElements.HeaderMenu;
 import ru.yandex.qatools.htmlelements.element.*;
 
 public class CoursePage extends ParentPage {
@@ -17,18 +18,10 @@ public class CoursePage extends ParentPage {
     @FindBy(xpath = ".//form[@id='registration_form']//button[text()='Регистрация']")
     private Button buttonRegister;
 
-    @FindBy(xpath = ".//button[@aria-label='Profile']")
-    private Button buttonProfile;
-
-    @FindBy(xpath = ".//ul[@class='menu menu_theme_popup-dark menu_right drop-down-content ember-view']")
-    private Select dropDownProfile;
-
-    @FindBy(xpath = ".//button[text()='Выход']")
-    private Button buttonSignOut;
-
     @FindBy(xpath = ".//div[@class='course-join-button ember-view course-nav__course-join']//a")
     private Button buttonContinueCourseJoinedPreviously;
 
+    public HeaderMenu headerMenu = new HeaderMenu(webDriver);
 
     public CoursePage(WebDriver webDriver) {
         super(webDriver);
@@ -41,12 +34,7 @@ public class CoursePage extends ParentPage {
 
     public CoursePage checkIsRedirectToCoursePage() {
         checkUrlWithPattern();
-        checkIsSignOutButtonPresent();
-        return this;
-    }
-
-    public CoursePage checkIsButtonJoinCoursePresent() {
-        Assert.assertTrue("Button joinTheCourse is not displayed", buttonJoinTheCourse.isDisplayed());
+        headerMenu.checkIsSignOutButtonPresent();
         return this;
     }
 
@@ -54,7 +42,6 @@ public class CoursePage extends ParentPage {
         Assert.assertTrue("Info course is free is not displayed", infoCourseIsFree.isDisplayed());
         return this;
     }
-
 
     public CoursePage clickOnButtonJoinTheCourse() {
         try {
@@ -82,18 +69,10 @@ public class CoursePage extends ParentPage {
         return this;
     }
 
-    public CoursePage checkIsSignOutButtonPresent() {
-        clickOnElement(buttonProfile);
-        webDriverWait10.until(ExpectedConditions.visibilityOf(dropDownProfile));
-        Assert.assertTrue("SignOut is not present in the Profile menu", isElementPresent(buttonSignOut));
-        return this;
-    }
-
     public LessonPage clickOnButtonContinueCourseOnTheCoursePage() {
         clickOnElement(buttonContinueCourseJoinedPreviously);
         webDriverWait10.until(ExpectedConditions.urlContains("lesson"));
         return new LessonPage(webDriver);
     }
-
 
 }

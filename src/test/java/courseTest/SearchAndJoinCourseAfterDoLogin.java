@@ -28,7 +28,7 @@ public class SearchAndJoinCourseAfterDoLogin extends BaseTest {
                 .clickOnButtonJoinTheCourseLoggedInUser()
                 .checkIsRedirectToLessonPage()
                 .checkIsCourseNamePresent(specificCourseTitle)
-                .checkIsCourseNextStepPresent()
-                .clickOnSignOutButtonAfterJoinCourse();
+                .checkIsCourseNextStepPresent();
+                headerMenu.clickOnSignOutButtonAfterJoinCourse();
     }
 }

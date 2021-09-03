@@ -11,6 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import pageWithElements.HeaderMenu;
 import pages.HomePage;
 import pages.LoginPage;
 
@@ -23,6 +24,7 @@ public class BaseTest {
     protected LoginPage loginPage;
     protected HomePage homePage;
     protected TestData testData;
+    protected HeaderMenu headerMenu;
     protected Logger logger = Logger.getLogger(getClass());
 
     @Rule
@@ -38,6 +40,7 @@ public class BaseTest {
         loginPage = new LoginPage(webDriver);
         homePage = new HomePage(webDriver);
         testData = new TestData();
+        headerMenu = new HeaderMenu(webDriver);
 
     }
 

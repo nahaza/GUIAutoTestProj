@@ -121,7 +121,8 @@ Steps to reproduce:
 3. Click on My courses button
 4. Click on the title of specific free course
 5. Click on Continue button
-6. Keep clicking on the Next step button until the very end of the course without doing tests
+6. Keep clicking on the every Course Lesson step button until the very end of the course without doing tests
+7. Being on the last step of the last lesson click on the NextStep button.
 
 Expected result:
 After step 2 - the user was logged in and redirected to  https://stepik.org/users/*.
@@ -129,3 +130,25 @@ Sign out button is present on the Profile menu.
 After step 4 - the user was redirected to  https://stepik.org/course/*. The free course info block is displayed
 After step 5 - the user was redirected to https://stepik.org/lesson/*. 
 After step 6 (clicking on the Next step button on the course last lesson last step) - popup modal window with the course finish info is displayed.  
+
+
+
+TC-9 Finish No exam course with doing tests
+
+Preconditions: register new user with unique username, email, password; make it joined some free course with no exam included
+
+Steps to reproduce:
+1. Open a browser and go to to https://stepik.org/catalog
+2. Sign-in with valid credentials
+3. Click on My courses button
+4. Click on the title of specific free course
+5. Click on Continue button
+6. Keep clicking on the every Course Lesson step doing test until the very last step of the course. Get testdata from the file "CourseNumberID--testData.xls"
+7. Being on the last step of the last lesson click on the NextStep button.
+
+Expected result:
+After step 2 - the user was logged in and redirected to  https://stepik.org/users/*.
+Sign out button is present on the Profile menu.
+After step 4 - the user was redirected to  https://stepik.org/course/*. The free course info block is displayed
+After step 5 - the user was redirected to https://stepik.org/lesson/*.
+After step 7 (clicking on the Next step button on the course last lesson last step) - popup modal window with the course finish info is displayed.

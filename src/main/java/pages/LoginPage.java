@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import pageWithElements.HeaderMenu;
 import ru.yandex.qatools.htmlelements.element.Button;
 import ru.yandex.qatools.htmlelements.element.TextBlock;
 import ru.yandex.qatools.htmlelements.element.TextInput;
@@ -19,18 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 
 public class LoginPage extends ParentPage {
-
-    @FindBy(xpath = ".//nav[@class='navbar']")
-    private TextBlock headerPanel;
-//
-//    @FindBy(xpath = ".//div[@data-kind='full_course_lists']//h1[text()='Онлайн-курсы']")
-//    private TextBlock infoPanel;
-
-    @FindBy(xpath = ".//a[@href='/catalog?auth=login']")
-    private Button buttonToProceedLogin;
-
-    @FindBy(xpath = ".//a[@href='/catalog?auth=registration']")
-    private Button buttonToProceedRegister;
 
     @FindBy(xpath = ".//input[@id='id_login_email']")
     private TextInput inputEmail;
@@ -52,12 +41,6 @@ public class LoginPage extends ParentPage {
 
     @FindBy(xpath = ".//form[@id='registration_form']//button[@class='sign-form__btn button_with-loader ']")
     private Button buttonRegister;
-
-    @FindBy(xpath = ".//button[@aria-label='Profile']")
-    private Button buttonProfile;
-
-    @FindBy(xpath = ".//ul[@class='menu menu_theme_popup-dark menu_right drop-down-content ember-view']")
-    private Select dropDownProfile;
 
     @FindBy(xpath = ".//form[@id='login_form']//li[@role='alert']")
     private TextBlock invalidCredErrorMessage;
@@ -82,6 +65,10 @@ public class LoginPage extends ParentPage {
     private String listOfCoursesInSearchResultLocator =
             ".//div[@data-list-type='search-results']//a[@class='course-card__title']";
 
+    public HeaderMenu headerMenu = new HeaderMenu(webDriver);
+
+    TestData testData = new TestData();
+
     public LoginPage(WebDriver webDriver) {
         super(webDriver);
     }
@@ -90,9 +77,6 @@ public class LoginPage extends ParentPage {
     String getRelativeUrl() {
         return "/catalog";
     }
-
-
-    TestData testData = new TestData();
 
     public void openLoginPage() {
         try {
@@ -103,10 +87,6 @@ public class LoginPage extends ParentPage {
             logger.error("Cannot work with LandingPage" + e);
             Assert.fail("Cannot work with LandingPage");
         }
-    }
-
-    public void clickOnButtonToProceedLogIn() {
-        clickOnElement(buttonToProceedLogin);
     }
 
     public void enterEmailInLogIn(String email) {
@@ -123,7 +103,7 @@ public class LoginPage extends ParentPage {
 
     public LoginPage fillLoginFormAndSubmit(String email, String password) {
         openLoginPage();
-        clickOnButtonToProceedLogIn();
+        headerMenu.clickOnButtonToProceedLogIn();
         enterEmailInLogIn(email);
         enterPasswordInLogIn(password);
         clickOnButtonLogIn();
@@ -136,16 +116,12 @@ public class LoginPage extends ParentPage {
     }
 
     public LoginPage checkIsInvalidCredErrorMessagePresent() {
-        Assert.assertTrue("No error messsage displayed",isElementPresent(invalidCredErrorMessage));
+        Assert.assertTrue("No error message displayed", isElementPresent(invalidCredErrorMessage));
         return this;
     }
 
     public void checkIsButtonToRegisterPresent() {
         Assert.assertTrue(isElementPresent(buttonRegister));
-    }
-
-    public void clickOnButtonToProceedRegister() {
-        clickOnElement(buttonToProceedRegister);
     }
 
     public void enterFullNameInRegistrationForm(String fullName) {
@@ -166,7 +142,7 @@ public class LoginPage extends ParentPage {
 
     public void fillRegistrationFormAndSubmit(String fullName, String email, String password) {
         openLoginPage();
-        clickOnButtonToProceedRegister();
+        headerMenu.clickOnButtonToProceedRegister();
         enterFullNameInRegistrationForm(fullName);
         enterEmailInRegistrationForm(email);
         enterPasswordInRegistrationForm(password);
@@ -182,7 +158,7 @@ public class LoginPage extends ParentPage {
         newUserCredentials.put("Email", email);
         newUserCredentials.put("Password", password);
         fillRegistrationFormAndSubmit(fullname, email, password);
-        new HomePage(webDriver).clickOnSignOutButton();
+        headerMenu.clickOnSignOutButton();
         return newUserCredentials;
     }
 
@@ -200,7 +176,7 @@ public class LoginPage extends ParentPage {
                 .checkIsRedirectToCoursePage()
                 .clickOnButtonJoinTheCourseLoggedInUser()
                 .checkIsRedirectToLessonPage();
-        new HomePage(webDriver).clickOnSignOutButton();
+        headerMenu.clickOnSignOutButton();
         return newUserCredentials;
     }
 
@@ -246,7 +222,7 @@ public class LoginPage extends ParentPage {
     private LoginPage closeDropDownSearchBodyIfIsDisplayed() {
         try {
             if (dropDownSearchInput.isDisplayed()) {
-                clickOnElement(headerPanel);
+                clickOnElement(headerMenu.headerPanel);
             }
         } catch (Exception e) {
             logger.info("No dropDown in searchInput");

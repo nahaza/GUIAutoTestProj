@@ -29,6 +29,7 @@ public abstract class ParentPage {
             ConfigFactory.create(ConfigProperties.class);
     protected final String baseUrl = configProperties.base_url();
 
+
     protected ParentPage(WebDriver webDriver) {
         this.webDriver = webDriver;
         PageFactory.initElements(
@@ -40,12 +41,6 @@ public abstract class ParentPage {
     }
 
     abstract String getRelativeUrl();
-
-    protected void checkUrl() {
-        Assert.assertEquals("Invalid page"
-                , baseUrl + getRelativeUrl()
-                , webDriver.getCurrentUrl());
-    }
 
     protected void checkUrlWithPattern() {
         Assert.assertThat("Invalid page"
@@ -138,17 +133,6 @@ public abstract class ParentPage {
         }
     }
 
-    protected void selectTextInDropDownByClickOnOption(WebElement dropDown, WebElement dropDownOptionToBeSelected, String text) {
-        try {
-            clickOnElement(dropDown);
-            webDriverWait10.until(ExpectedConditions.visibilityOf(dropDownOptionToBeSelected));
-            clickOnElement(dropDownOptionToBeSelected);
-            logger.info("' " + text + "' was selected in DropDown " + getElementName(dropDown));
-        } catch (Exception e) {
-            writeErrorAndStopTest(e);
-        }
-    }
-
     public WebElement scrollToCourseWithSpecificTitleInResults(
             String specificCourseLocator
             , String listOfCoursesInSearchResultLocator
@@ -185,17 +169,6 @@ public abstract class ParentPage {
         actions.moveByOffset(-1, -1).build().perform();
         actions.release().build().perform();
         webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-    }
-
-
-    public void selectCheckboxOptionWithValue(String textOfOptionsToBeSelected, String optionsToBeSelectedLocator) {
-        String[] listOfOptionsTextToBeSelected = textOfOptionsToBeSelected.split(";");
-        List<WebElement> optionsToBeSelected = webDriver.findElements(By.xpath(optionsToBeSelectedLocator));
-        for (WebElement element : optionsToBeSelected) {
-            if (textOfOptionsToBeSelected.contains(element.getText())) {
-                clickOnElement(element, element.getText());
-            }
-        }
     }
 
 }

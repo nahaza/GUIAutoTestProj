@@ -14,8 +14,8 @@ public class RegistrationTest extends BaseTest {
     public void newUserRegistrationSuccessful() {
         loginPage.fillRegistrationFormAndSubmit(
                 testData.getFullNameToRegister(), testData.getEmailToRegister(), testData.getPasswordToRegister());
-        homePage.checkIsRedirectToHomePage()
-                .clickOnSignOutButtonAfterRegister();
+        homePage.checkIsRedirectToHomePage();
+                headerMenu.clickOnSignOutButtonAfterRegister();
     }
 
     @Test
