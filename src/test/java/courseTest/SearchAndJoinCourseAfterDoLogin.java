@@ -19,7 +19,7 @@ public class SearchAndJoinCourseAfterDoLogin extends BaseTest {
     }
 
     @Test
-    public void searchAndJoinUniqueExistentFreeCourseByLoggedInUser() {
+    public void TC_7_searchAndJoinUniqueExistentFreeCourseByLoggedInUser() {
         loginPage.loginWithValidCred(email, password)
                 .checkIsRedirectToHomePage()
                 .searchAndJoinUniqueExistentFreeCourseByLoggedInUser(specificCourseTitle)
@@ -29,6 +29,7 @@ public class SearchAndJoinCourseAfterDoLogin extends BaseTest {
                 .checkIsRedirectToLessonPage()
                 .checkIsCourseNamePresent(specificCourseTitle)
                 .checkIsCourseNextStepPresent();
-                headerMenu.clickOnSignOutButtonAfterJoinCourse();
+        headerMenu.clickOnProfileAndSignOutButton();
+        loginPage.checkIsLoginButtonPresent();
     }
 }

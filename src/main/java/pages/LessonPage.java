@@ -95,7 +95,7 @@ public class LessonPage extends ParentPage {
     private String optionsLocatorCheckbox = ".//span[@class='choice-quiz-show__option s-checkbox__label']";
 
     private String doAnswerLocatorCheckbox = ".//div[@data-type='choice-quiz']//label[@class='s-checkbox'][.//span[contains(text(),'%s')]]//span[@class='s-" +
-            "checkbox__circle']";
+            "checkbox__border']";
 
     private String questionLocatorInput = ".//span[@class='fill-blanks-quiz__text']";
 
@@ -111,8 +111,7 @@ public class LessonPage extends ParentPage {
 
     private String doAnswerLocatorRadiobuttonOneOption = ".//div[@data-type='choice-quiz']//label[@class='s-radio'][.//span[contains(text(), " + "\"%s\"" + ")]]//span[@class='s-radio__border']";
 
-    private String answerLocatorSingleInput = ".//html[@dir='ltr']";/*".//body[@class='rich-text-editor__content cke_editable cke_editable_" +
-            "themed cke_contents_ltr cke_show_borders']";*/
+    private String answerLocatorSingleInput = ".//html[@dir='ltr']";
 
     protected List<WebElement> listOfLessons = webDriver.findElements(By.xpath(listOfCourseLessonsLocator));
 
@@ -134,7 +133,7 @@ public class LessonPage extends ParentPage {
     }
 
     public boolean isCourseNameLinkPresent(String courseName) {
-        return isElementPresent(webDriver.findElement(By.xpath(String.format(
+        return actionsWithElements.isElementPresent(webDriver.findElement(By.xpath(String.format(
                 courseNameLinkLocator, courseName))), "courseNameLink");
     }
 
@@ -146,26 +145,27 @@ public class LessonPage extends ParentPage {
 
     public LessonPage checkIsCourseNextStepPresent() {
         Assert.assertTrue("CourseNextStep is not present on the Page"
-                , isElementPresent(buttonCourseNextStep));
+                , actionsWithElements.isElementPresent(buttonCourseNextStep));
         return this;
     }
 
     public LessonPage finishNoExamCourseWithoutDoingTests() throws InterruptedException {
         for (int i = 0; i < listOfLessons.size(); i++) {
-            clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));
+            actionsWithElements.clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));
             Thread.sleep(2000);
-            webDriverWait10.until(ExpectedConditions.urlContains("/step/1"));
+            actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("/step/1"));
             logger.info("Lesson " + listOfLessons.get(i).getText());
             List<WebElement> listOfLessonSteps = webDriver.findElements(By.xpath(listOfLessonStepsOnTopBarLocator));
             for (int j = 0; j < listOfLessonSteps.size(); j++) {
-                clickOnElement(listOfLessonSteps.get(j), "lesson " + (i + 1) + ", step " + (j + 1));
-                webDriverWait10.until(ExpectedConditions.titleContains("Шаг " + (j + 1)));
+                actionsWithElements.clickOnElement(listOfLessonSteps.get(j), "lesson " + (i + 1) + ", step " + (j + 1));
+                actionsWithElements.webDriverWait15.until(ExpectedConditions.titleContains("Шаг " + (j + 1)));
             }
         }
-        scrollToWebElement(buttonCourseNextStep);
-        clickOnElement(buttonCourseNextStep);
-        Assert.assertTrue("Modal popup is not displayed", isElementPresent(finishModalPopup));
+        actionsWithElements.scrollToWebElement(buttonCourseNextStep);
+        actionsWithElements.clickOnElement(buttonCourseNextStep);
+        Assert.assertTrue("Modal popup is not displayed", actionsWithElements.isElementPresent(finishModalPopup));
         logger.info("Finish course modal popup is displayed");
+        actionsWithElements.clickOnElement(closeFinishModalPopup);
         return this;
     }
 
@@ -175,12 +175,12 @@ public class LessonPage extends ParentPage {
 
 
     public LessonPage finishNoExamCourseWithDoingTests(String specificCourseTitle) throws InterruptedException, IOException {
-        Map<String, String> listFoCoursesId = ExcelDriver.getData(ParentPage.configProperties.DATA_FILE_COURSES(), "coursesId");
+        Map<String, String> listFoCoursesId = ExcelDriver.getData(actionsWithElements.configProperties.DATA_FILE_COURSES(), "coursesId");
         String courseId = listFoCoursesId.get(specificCourseTitle);
         for (int i = 0; i < listOfLessons.size(); i++) {
-            clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));
+            actionsWithElements.clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));
             Thread.sleep(2000);
-            webDriverWait10.until(ExpectedConditions.urlContains("/step/1"));
+            actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("/step/1"));
             logger.info("Lesson " + listOfLessons.get(i).getText());
             List<WebElement> listOfLessonSteps = webDriver.findElements(By.xpath(listOfLessonStepsOnTopBarLocator));
             ArrayList<Integer> numberOfQuizStep = new ArrayList<>();
@@ -189,19 +189,18 @@ public class LessonPage extends ParentPage {
                 numberOfQuizStep.add(Integer.parseInt(listOfLessonQuizes.get(q).getAttribute("data-step-position")));
             }
             for (int j = 0; j < listOfLessonSteps.size(); j++) {
-                clickOnElement(listOfLessonSteps.get(j), "lesson " + (i + 1) + ", step " + (j + 1));
+                actionsWithElements.clickOnElement(listOfLessonSteps.get(j), "lesson " + (i + 1) + ", step " + (j + 1));
                 if (numberOfQuizStep.contains(j + 1)) {
                     doTheTests(courseId, i + 1, j + 1);
                 }
-                webDriverWait10.until(ExpectedConditions.titleContains("Шаг " + (j + 1)));
+                actionsWithElements.webDriverWait15.until(ExpectedConditions.titleContains("Шаг " + (j + 1)));
             }
         }
-        scrollToWebElement(buttonCourseNextStep);
-        clickOnElement(buttonCourseNextStep);
-        Assert.assertTrue("Modal popup is not displayed", isElementPresent(finishModalPopup));
+        actionsWithElements.scrollToWebElement(buttonCourseNextStep);
+        actionsWithElements.clickOnElement(buttonCourseNextStep);
+        Assert.assertTrue("Modal popup is not displayed", actionsWithElements.isElementPresent(finishModalPopup));
         logger.info("Finish course modal popup is displayed");
-        clickOnElement(closeFinishModalPopup);
-        headerMenu.clickOnSignOutButtonAfterJoinCourse();
+        actionsWithElements.clickOnElement(closeFinishModalPopup);
         return this;
     }
 
@@ -219,7 +218,7 @@ public class LessonPage extends ParentPage {
 
     public LessonPage doTheTests(String idCourse, int lesson, int step) throws IOException, InterruptedException {
         Map<String, String> dataForTests = ExcelDriver.getData(
-                ParentPage.configProperties.DATA_FILE_PATH() + idCourse + "testData.xls"
+                actionsWithElements.configProperties.DATA_FILE_PATH() + idCourse + "testData.xls"
                 , String.format("lesson%s_step%s", lesson, step));
         String actionToDoTheTest = dataForTests.get("action");
         if (actionToDoTheTest.equals("dragAndDrop")) {
@@ -239,9 +238,9 @@ public class LessonPage extends ParentPage {
         } else if (actionToDoTheTest.equals("inputInTextArea")) {
             doTheTestInputInTextArea(dataForTests, step);
         }
-        clickOnElement(buttonSubmitAnswer);
-        webDriverWait5.until(ExpectedConditions.visibilityOf(testResultMessage));
-        Assert.assertTrue(isElementPresent(testResultMessage, "Test result message "));
+        actionsWithElements.clickOnElement(buttonSubmitAnswer);
+        actionsWithElements.webDriverWait5.until(ExpectedConditions.visibilityOf(testResultMessage));
+        Assert.assertTrue(actionsWithElements.isElementPresent(testResultMessage, "Test result message "));
         return this;
     }
 
@@ -255,9 +254,9 @@ public class LessonPage extends ParentPage {
                     .contains(answerMap.get(webDriver.findElements(By.xpath(questionLocatorDragAndDrop)).get(i).getText()))) {
                 String fromLocator =
                         String.format(doAnswerLocatorDragAndDrop, answerMap.get(webDriver.findElements(By.xpath(questionLocatorDragAndDrop)).get(i).getText()));
-                dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
+                actionsWithElements.dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
                         , webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i));
-                Thread.sleep(3000);
+                Thread.sleep(4000);
                 if (webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i).getText().contains(answerToBe)) {
                     logger.info("Element " + webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i).getText() + " was dropped");
                 } else {
@@ -282,7 +281,7 @@ public class LessonPage extends ParentPage {
                     .contains(answerToBe)) {
                 String fromLocator =
                         String.format(doAnswerLocatorDragAndDropSort, answerToBe);
-                dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
+                actionsWithElements.dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
                         , webDriver.findElements(By.xpath(answerLocatorDragAndDropSort)).get(i));
                 Thread.sleep(3000);
                 if (webDriver.findElements(By.xpath(answerLocatorDragAndDropSort)).get(i).getText().contains(answerToBe)) {
@@ -295,7 +294,7 @@ public class LessonPage extends ParentPage {
                 }
             }
         }
-        webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 
@@ -307,18 +306,18 @@ public class LessonPage extends ParentPage {
         for (int i = 0; i < listOfCheckBoxOptions.size(); i++) {
             for (int j = 0; j < answersListFromFile.length; j++) {
                 if (listOfCheckBoxOptions.get(i).getText().contains(answersListFromFile[j])) {
-                    clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocatorCheckbox
+                    actionsWithElements.clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocatorCheckbox
                             , answersListFromFile[j])))
                             , "Checkbox option " + listOfCheckBoxOptions.get(i).getText());
                 }
             }
         }
-        webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 
     public LessonPage doTheTestSingleInput(Map<String, String> dataForTests, int step) throws IOException {
-        webDriverWait10.until(ExpectedConditions.textToBe(By.xpath(".//span[@class='lesson__step-title']"), String.format("Шаг %s", step)));
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.textToBe(By.xpath(".//span[@class='lesson__step-title']"), String.format("Шаг %s", step)));
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
         String answersFromFile = dataForTests.get("answers");
         WebElement frame = webDriver.findElement(By.xpath(".//iframe"));
@@ -327,17 +326,17 @@ public class LessonPage extends ParentPage {
         body.sendKeys(answersFromFile);
         webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
         webDriver.switchTo().defaultContent();
-        webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 
     public LessonPage doTheTestInputInTextArea(Map<String, String> dataForTests, int step) throws IOException {
-        webDriverWait10.until(ExpectedConditions.textToBe(By.xpath(".//span[@class='lesson__step-title']"), String.format("Шаг %s", step)));
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.textToBe(By.xpath(".//span[@class='lesson__step-title']"), String.format("Шаг %s", step)));
         Assert.assertEquals(String.format("Шаг %s", step), lessonStepOnFooter.getText());
         String answersFromFile = dataForTests.get("answers");
         WebElement textArea = webDriver.findElement(By.tagName("textarea"));
-        enterTextToElement(textArea, answersFromFile, "textArea");
-        webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
+        actionsWithElements.enterTextToElement(textArea, answersFromFile, "textArea");
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 
@@ -348,10 +347,10 @@ public class LessonPage extends ParentPage {
         List<WebElement> listOfAnswersOnThePage = webDriver.findElements(By.xpath(questionLocatorInput));
         for (int i = 0; i < listOfAnswersOnThePage.size(); i++) {
             String textToEnter = answerMap.get(listOfAnswersOnThePage.get(i).getText());
-            enterTextToElement(webDriver.findElements(By.xpath(answerLocatorInput)).get(i)
+            actionsWithElements.enterTextToElement(webDriver.findElements(By.xpath(answerLocatorInput)).get(i)
                     , textToEnter, " input " + listOfAnswersOnThePage.get(i).getText());
         }
-        webDriverWait10.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 
@@ -366,13 +365,13 @@ public class LessonPage extends ParentPage {
                 Assert.assertTrue(answerMap.containsKey(questionsIs));
                 String answerToBe = answerMap.get(questionsIs);
                 if (listOfAnswerOptions.get(j).getText().contains(answerToBe)) {
-                    clickOnElement(webDriver.findElements(By.xpath(String.format(doAnswerLocatorRadiobutton, questionsIs))).get(j),
+                    actionsWithElements.clickOnElement(webDriver.findElements(By.xpath(String.format(doAnswerLocatorRadiobutton, questionsIs))).get(j),
                             "Radiobutton " + answerToBe);
-                    webDriverWait5.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
+                    actionsWithElements.webDriverWait5.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
                 }
             }
         }
-        webDriverWait5.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
+        actionsWithElements.webDriverWait5.until(ExpectedConditions.visibilityOf(buttonSubmitAnswer));
         return this;
     }
 
@@ -382,7 +381,7 @@ public class LessonPage extends ParentPage {
         List<WebElement> listOfAnswerOptions = webDriver.findElements(By.xpath(answerLocatorRadiobuttonOneOption));
         for (int i = 0; i < listOfAnswerOptions.size(); i++) {
             if (listOfAnswerOptions.get(i).getText().contains(answersFromFile)) {
-                clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocatorRadiobuttonOneOption
+                actionsWithElements.clickOnElement(webDriver.findElement(By.xpath(String.format(doAnswerLocatorRadiobuttonOneOption
                         , answersFromFile)))
                         , "Radiobutton one option " + answersFromFile);
                 webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);

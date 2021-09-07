@@ -2,7 +2,6 @@ package pages;
 
 import libs.TestData;
 import org.junit.Assert;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -90,15 +89,15 @@ public class LoginPage extends ParentPage {
     }
 
     public void enterEmailInLogIn(String email) {
-        enterTextToElement(inputEmail, email);
+        actionsWithElements.enterTextToElement(inputEmail, email);
     }
 
     public void enterPasswordInLogIn(String password) {
-        enterTextToElement(inputPassword, password);
+        actionsWithElements.enterTextToElement(inputPassword, password);
     }
 
     public void clickOnButtonLogIn() {
-        clickOnElement(buttonLogin);
+        actionsWithElements.clickOnElement(buttonLogin);
     }
 
     public LoginPage fillLoginFormAndSubmit(String email, String password) {
@@ -111,33 +110,34 @@ public class LoginPage extends ParentPage {
     }
 
     public LoginPage checkIsLoginButtonPresent() {
-        Assert.assertTrue("Login button is not present", isElementPresent(buttonLogin));
+        Assert.assertTrue("Login button is not present", actionsWithElements.isElementPresent(buttonLogin));
         return this;
     }
 
     public LoginPage checkIsInvalidCredErrorMessagePresent() {
-        Assert.assertTrue("No error message displayed", isElementPresent(invalidCredErrorMessage));
+        Assert.assertTrue("No error message displayed", actionsWithElements.isElementPresent(invalidCredErrorMessage));
         return this;
     }
 
     public void checkIsButtonToRegisterPresent() {
-        Assert.assertTrue(isElementPresent(buttonRegister));
+        Assert.assertTrue("Register button is not present"
+                , actionsWithElements.isElementPresent(buttonRegister));
     }
 
     public void enterFullNameInRegistrationForm(String fullName) {
-        enterTextToElement(inputFullNameRegistrationForm, fullName);
+        actionsWithElements.enterTextToElement(inputFullNameRegistrationForm, fullName);
     }
 
     public void enterEmailInRegistrationForm(String email) {
-        enterTextToElement(inputEmailRegistrationForm, email);
+        actionsWithElements.enterTextToElement(inputEmailRegistrationForm, email);
     }
 
     public void enterPasswordInRegistrationForm(String password) {
-        enterTextToElement(inputPasswordRegistrationForm, password);
+        actionsWithElements.enterTextToElement(inputPasswordRegistrationForm, password);
     }
 
     public void clickOnButtonRegister() {
-        clickOnElement(buttonRegister);
+        actionsWithElements.clickOnElement(buttonRegister);
     }
 
     public void fillRegistrationFormAndSubmit(String fullName, String email, String password) {
@@ -158,7 +158,8 @@ public class LoginPage extends ParentPage {
         newUserCredentials.put("Email", email);
         newUserCredentials.put("Password", password);
         fillRegistrationFormAndSubmit(fullname, email, password);
-        headerMenu.clickOnSignOutButton();
+        headerMenu.clickOnProfileAndSignOutButton();
+        checkIsButtonToRegisterPresent();
         return newUserCredentials;
     }
 
@@ -176,7 +177,8 @@ public class LoginPage extends ParentPage {
                 .checkIsRedirectToCoursePage()
                 .clickOnButtonJoinTheCourseLoggedInUser()
                 .checkIsRedirectToLessonPage();
-        headerMenu.clickOnSignOutButton();
+        headerMenu.clickOnProfileAndSignOutButton();
+        checkIsButtonToRegisterPresent();
         return newUserCredentials;
     }
 
@@ -187,34 +189,34 @@ public class LoginPage extends ParentPage {
 
 
     public LoginPage checkValidationEmptyEmailErrorMessage() {
-        Assert.assertEquals("Заполните это поле.", webDriver.findElement(By.name("login")).getAttribute("validationMessage"));
+        Assert.assertEquals("Заполните это поле.", inputEmail.getAttribute("validationMessage"));
         return this;
     }
 
     public LoginPage checkValidationEmptyPasswordErrorMessage() {
-        Assert.assertEquals("Заполните это поле.", webDriver.findElement(By.name("password")).getAttribute("validationMessage"));
+        Assert.assertEquals("Заполните это поле.", inputPassword.getAttribute("validationMessage"));
         return this;
     }
 
     public void enterTheCourseName(String courseNameToSearch) {
-        enterTextToElement(inputSearchForm, courseNameToSearch);
+        actionsWithElements.enterTextToElement(inputSearchForm, courseNameToSearch);
     }
 
     public void clickOnSearchButton() {
-        clickOnElement(buttonSearch);
+        actionsWithElements.clickOnElement(buttonSearch);
     }
 
     public CoursePage searchAndJoinUniqueExistentFreeCourseByUnauthorisedUser(String specificCourseTitle) {
         openLoginPage();
         enterTheCourseName(specificCourseTitle);
         closeDropDownSearchBodyIfIsDisplayed();
-        clickOnElement(checkBoxFreeCourse);
+        actionsWithElements.clickOnElement(checkBoxFreeCourse);
         clickOnSearchButton();
-        webDriverWait10.until(ExpectedConditions.urlContains("search"));
-        WebElement specificCourseLink = scrollToCourseWithSpecificTitleInResults(
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("search"));
+        WebElement specificCourseLink = actionsWithElements.scrollToCourseWithSpecificTitleInResults(
                 specificCourseLocator, listOfCoursesInSearchResultLocator, specificCourseTitle);
-        clickOnElement(specificCourseLink, "specificCourseLink");
-        webDriverWait10.until(ExpectedConditions.urlContains("course"));
+        actionsWithElements.clickOnElement(specificCourseLink, "specificCourseLink");
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("course"));
         return new CoursePage(webDriver);
     }
 
@@ -222,7 +224,7 @@ public class LoginPage extends ParentPage {
     private LoginPage closeDropDownSearchBodyIfIsDisplayed() {
         try {
             if (dropDownSearchInput.isDisplayed()) {
-                clickOnElement(headerMenu.headerPanel);
+                actionsWithElements.clickOnElement(headerMenu.headerPanel);
             }
         } catch (Exception e) {
             logger.info("No dropDown in searchInput");

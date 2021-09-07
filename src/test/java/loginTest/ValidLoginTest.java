@@ -20,10 +20,11 @@ public class ValidLoginTest extends BaseTest {
 
 
     @Test
-    public void doLoginWithValidCred() {
+    public void TC_3_doLoginWithValidCred() {
         loginPage.loginWithValidCred(email, password)
                 .checkIsRedirectToHomePage();
-        headerMenu.clickOnSignOutButtonAfterLogin();
+        headerMenu.clickOnSignOutButton();
+        loginPage.checkIsLoginButtonPresent();
 
     }
 }

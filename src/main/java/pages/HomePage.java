@@ -14,11 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 public class HomePage extends ParentPage {
 
-    @FindBy(xpath = ".//form[@id='registration_form']//button[@class='sign-form__btn button_with-loader ']")
-    private Button buttonRegister;
-
-    @FindBy(xpath = ".//form[@id='login_form']//button[@class='sign-form__btn button_with-loader ']")
-    private Button buttonLogin;
 
     @FindBy(xpath = ".//input[@class='search-form__input ']")
     private TextInput inputSearchForm;
@@ -77,32 +72,32 @@ public class HomePage extends ParentPage {
     }
 
     public void enterTheCourseName(String courseNameToSearch) {
-        enterTextToElement(inputSearchForm, courseNameToSearch);
+        actionsWithElements.enterTextToElement(inputSearchForm, courseNameToSearch);
     }
 
     public HomePage checkIsCloseInputSearchFormButtonPresent() {
         Assert.assertTrue("CloseInputSearchFormButton is not present"
-                , isElementPresent(closeInputSearchFormButton));
+                , actionsWithElements.isElementPresent(closeInputSearchFormButton));
         return this;
     }
 
     public void clickOnSearchButton() {
-        clickOnElement(buttonSearch);
+        actionsWithElements.clickOnElement(buttonSearch);
     }
 
     public CoursePage searchAndJoinUniqueExistentFreeCourseByLoggedInUser(String specificCourseTitle) {
         enterTheCourseName(specificCourseTitle);
         checkIsCloseInputSearchFormButtonPresent();
         closeDropDownSearchBodyIfIsDisplayed();
-        clickOnElement(checkBoxFreeCourse);
+        actionsWithElements.clickOnElement(checkBoxFreeCourse);
         clickOnSearchButton();
-        webDriverWait10.until(ExpectedConditions.urlContains("search"));
-        WebElement specificCourseLink = scrollToCourseWithSpecificTitleInResults(
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("search"));
+        WebElement specificCourseLink = actionsWithElements.scrollToCourseWithSpecificTitleInResults(
                 specificCourseLocator, listOfCoursesInSearchResultLocator, specificCourseTitle);
-        clickOnElement(specificCourseLink, "specificCourseLink");
+        actionsWithElements.clickOnElement(specificCourseLink, "specificCourseLink");
         webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-        webDriverWait10.until(ExpectedConditions.urlContains("course"));
-        webDriverWait10.until(ExpectedConditions.visibilityOf(headerMenu.buttonProfile));
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("course"));
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.visibilityOf(headerMenu.buttonProfile));
 
         return new CoursePage(webDriver);
     }
@@ -110,7 +105,7 @@ public class HomePage extends ParentPage {
     private HomePage closeDropDownSearchBodyIfIsDisplayed() {
         try {
             if (dropDownSearchInput.isDisplayed()) {
-                clickOnElement(headerMenu.headerPanel);
+                actionsWithElements.clickOnElement(headerMenu.headerPanel);
             }
         } catch (Exception e) {
             logger.info("No dropDown in searchInput");
@@ -119,10 +114,10 @@ public class HomePage extends ParentPage {
     }
 
     public CoursePage clickOnTheCourseInTheListCoursesJoinedPreviously(String specificCourseTitle) {
-        WebElement specificCourseLink = scrollToCourseWithSpecificTitleInResults(
+        WebElement specificCourseLink = actionsWithElements.scrollToCourseWithSpecificTitleInResults(
                 specificCourseLocatorInMyCourses, listOfCoursesInMyCoursesLocator, specificCourseTitle);
-        clickOnElement(specificCourseLink, "specificCourseLink");
-        webDriverWait10.until(ExpectedConditions.urlContains("course"));
+        actionsWithElements.clickOnElement(specificCourseLink, "specificCourseLink");
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("course"));
         return new CoursePage(webDriver);
     }
 }

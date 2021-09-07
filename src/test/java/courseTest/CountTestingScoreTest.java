@@ -2,6 +2,7 @@ package courseTest;
 
 import baseTest.BaseTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Map;
@@ -19,6 +20,7 @@ public class CountTestingScoreTest extends BaseTest {
     }
 
     @Test
+    @Ignore
     public void CountTestingScoreTest(){
         //work in progress
 

@@ -1,7 +1,9 @@
 package baseTest;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import libs.ConfigProperties;
 import libs.TestData;
+import org.aeonbits.owner.ConfigFactory;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -17,7 +19,6 @@ import pages.LoginPage;
 
 import java.util.concurrent.TimeUnit;
 
-import static pages.ParentPage.configProperties;
 
 public class BaseTest {
     WebDriver webDriver;
@@ -26,6 +27,7 @@ public class BaseTest {
     protected TestData testData;
     protected HeaderMenu headerMenu;
     protected Logger logger = Logger.getLogger(getClass());
+    protected static ConfigProperties configProperties = ConfigFactory.create(ConfigProperties.class);
 
     @Rule
     public TestName testName = new TestName();

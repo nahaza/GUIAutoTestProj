@@ -16,7 +16,7 @@ public class InvalidLoginTest extends BaseTest {
             , "1veraexpert209+1195675139@gmail.com,2"
     })
     @TestCaseName("doLoginWithInvalidCred: email={0}, password={1}")
-    public void doLoginWithInvalidCred(String email, String password) {
+    public void TC_4_doLoginWithInvalidCred(String email, String password) {
         loginPage.fillLoginFormAndSubmit(email, password)
                 .checkIsLoginButtonPresent()
                 .checkIsInvalidCredErrorMessagePresent();
@@ -26,13 +26,13 @@ public class InvalidLoginTest extends BaseTest {
     @Parameters({
             ","
     })
-    public void doLoginWithEmptyCred(String email, String password) {
+    public void TC_5_doLoginWithEmptyCred(String email, String password) {
         loginPage.fillLoginFormAndSubmit(email, password)
                 .checkIsLoginButtonPresent();
     }
 
     @Test
-    public void checkValidationLoginErrorMessages() {
+    public void TC_5_checkValidationLoginErrorMessages() {
         loginPage.fillLoginFormAndSubmit("", "");
         loginPage.checkValidationEmptyEmailErrorMessage();
         loginPage.enterEmailInLogIn("veraexpert209+1195675139@gmail.coml");
