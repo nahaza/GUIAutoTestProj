@@ -11,11 +11,12 @@ public class RegistrationTest extends BaseTest {
 
 
     @Test
-    public void newUserRegistrationSuccessful() {
+    public void TC_1_newUserRegistrationSuccessful() {
         loginPage.fillRegistrationFormAndSubmit(
                 testData.getFullNameToRegister(), testData.getEmailToRegister(), testData.getPasswordToRegister());
         homePage.checkIsRedirectToHomePage();
-                headerMenu.clickOnSignOutButtonAfterRegister();
+        headerMenu.clickOnSignOutButton();
+        loginPage.checkIsButtonToRegisterPresent();
     }
 
     @Test
@@ -27,7 +28,7 @@ public class RegistrationTest extends BaseTest {
             ",,"
 
     })
-    public void newUserRegistrationFailed(String fullname, String email, String password) {
+    public void TC_2_newUserRegistrationFailed(String fullname, String email, String password) {
         loginPage.fillRegistrationFormAndSubmit(fullname, email, password);
         loginPage.checkIsButtonToRegisterPresent();
 

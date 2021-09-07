@@ -39,13 +39,13 @@ public class CoursePage extends ParentPage {
     }
 
     public CoursePage checkIsCourseFreeInfoPresent() {
-        Assert.assertTrue("Info course is free is not displayed", infoCourseIsFree.isDisplayed());
+        Assert.assertTrue("Info course is free is not displayed", actionsWithElements.isElementPresent(infoCourseIsFree));
         return this;
     }
 
     public CoursePage clickOnButtonJoinTheCourse() {
         try {
-            clickOnElement(buttonJoinTheCourse);
+            actionsWithElements.clickOnElement(buttonJoinTheCourse);
         } catch (Exception e) {
             logger.info("The button Join the course was not found. Check if the course is free");
             Assert.fail("The button Join the course was not found. Check if the course is free");
@@ -55,8 +55,8 @@ public class CoursePage extends ParentPage {
 
     public LessonPage clickOnButtonJoinTheCourseLoggedInUser() {
         try {
-            clickOnElement(buttonJoinTheCourse);
-            webDriverWait10.until(ExpectedConditions.urlContains("lesson"));
+            actionsWithElements.clickOnElement(buttonJoinTheCourse);
+            actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("lesson"));
         } catch (Exception e) {
             logger.info("The button Join the course was not found. Check if the course is free");
             Assert.fail("The button Join the course was not found. Check if the course is free");
@@ -64,14 +64,9 @@ public class CoursePage extends ParentPage {
         return new LessonPage(webDriver);
     }
 
-    public CoursePage checkIsButtonRegisterPresent() {
-        Assert.assertTrue("Register button is not displayed", buttonRegister.isDisplayed());
-        return this;
-    }
-
     public LessonPage clickOnButtonContinueCourseOnTheCoursePage() {
-        clickOnElement(buttonContinueCourseJoinedPreviously);
-        webDriverWait10.until(ExpectedConditions.urlContains("lesson"));
+        actionsWithElements.clickOnElement(buttonContinueCourseJoinedPreviously);
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("lesson"));
         return new LessonPage(webDriver);
     }
 

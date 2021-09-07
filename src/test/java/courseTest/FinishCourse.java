@@ -2,11 +2,9 @@ package courseTest;
 
 import baseTest.BaseTest;
 import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 
 
 import java.io.IOException;
@@ -28,27 +26,30 @@ public class FinishCourse extends BaseTest {
     }
 
     @Test
-    public void finishNoExamCourseNotDoingTests() throws InterruptedException {
+    public void TC_8_finishNoExamCourseNotDoingTests() throws InterruptedException {
         loginPage.loginWithValidCred(email, password)
                 .checkIsRedirectToHomePage();
-                headerMenu.clickOnMyCourseButton();
-                homePage.clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
+        headerMenu.clickOnMyCourseButton();
+        homePage.clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
                 .checkIsRedirectToCoursePage()
                 .clickOnButtonContinueCourseOnTheCoursePage()
                 .checkIsRedirectToLessonPage()
                 .finishNoExamCourseWithoutDoingTests();
+        headerMenu.clickOnProfileAndSignOutButton();
+        loginPage.checkIsLoginButtonPresent();
 
 
     }
 
 
     @Test
-    //test finishCourse with method finish1LessonDragAndDrop was deleted.
-    public void finishNoExamCourseDoingTests() throws IOException, InterruptedException {
+    public void TC_9_finishNoExamCourseDoingTests() throws IOException, InterruptedException {
         loginPage.loginWithValidCred(email, password);
-                headerMenu.clickOnMyCourseButton();
-                homePage.clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
+        headerMenu.clickOnMyCourseButton();
+        homePage.clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
                 .clickOnButtonContinueCourseOnTheCoursePage()
                 .finishNoExamCourseWithDoingTests(specificCourseTitle);
+        headerMenu.clickOnProfileAndSignOutButton();
+        loginPage.checkIsLoginButtonPresent();
     }
 }

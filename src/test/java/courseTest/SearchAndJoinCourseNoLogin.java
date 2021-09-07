@@ -6,10 +6,10 @@ import org.junit.Test;
 
 public class SearchAndJoinCourseNoLogin extends BaseTest {
     @Test
-    public void searchAndJoinUniqueExistentFreeCourseByUnauthorisedUser() {
+    public void TC_6_searchAndJoinUniqueExistentFreeCourseByUnauthorisedUser() {
         loginPage.searchAndJoinUniqueExistentFreeCourseByUnauthorisedUser("C#")
                 .checkIsCourseFreeInfoPresent()
-                .clickOnButtonJoinTheCourse()
-                .checkIsButtonRegisterPresent();
+                .clickOnButtonJoinTheCourse();
+        loginPage.checkIsButtonToRegisterPresent();
     }
 }
