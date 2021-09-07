@@ -8,17 +8,14 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.yandex.qatools.htmlelements.element.TypifiedElement;
-import ru.yandex.qatools.htmlelements.loader.decorator.HtmlElementDecorator;
-import ru.yandex.qatools.htmlelements.loader.decorator.HtmlElementLocatorFactory;
+
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.containsString;
 
 public class ActionsWithElements {
     Logger logger = Logger.getLogger(getClass());
@@ -48,7 +45,6 @@ public class ActionsWithElements {
             webDriverWait15.until(ExpectedConditions.visibilityOf(webElement));
             webElement.clear();
             webElement.sendKeys(text);
-            //webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
             logger.info("'" + text + "' was entered in element " + getElementName(webElement));
         } catch (Exception e) {
             writeErrorAndStopTest(e, getElementName(webElement));
@@ -60,7 +56,6 @@ public class ActionsWithElements {
             webDriverWait15.until(ExpectedConditions.visibilityOf(webElement));
             webElement.clear();
             webElement.sendKeys(text);
-            //webDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
             logger.info("'" + text + "' was entered in element " + elementName);
         } catch (Exception e) {
             writeErrorAndStopTest(e, elementName);
