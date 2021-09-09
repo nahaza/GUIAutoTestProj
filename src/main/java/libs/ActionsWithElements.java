@@ -14,7 +14,6 @@ import ru.yandex.qatools.htmlelements.element.TypifiedElement;
 
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 public class ActionsWithElements {
@@ -152,7 +151,6 @@ public class ActionsWithElements {
         actions.moveToElement(elementTo).build().perform();
         actions.moveByOffset(-1, -1).build().perform();
         actions.release().build().perform();
-        webDriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 
 }

@@ -256,7 +256,7 @@ public class LessonPage extends ParentPage {
                         String.format(doAnswerLocatorDragAndDrop, answerMap.get(webDriver.findElements(By.xpath(questionLocatorDragAndDrop)).get(i).getText()));
                 actionsWithElements.dragAndDropElements(webDriver.findElement(By.xpath(fromLocator))
                         , webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i));
-                Thread.sleep(4000);
+                Thread.sleep(3000);
                 if (webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i).getText().contains(answerToBe)) {
                     logger.info("Element " + webDriver.findElements(By.xpath(answerLocatorDragAndDrop)).get(i).getText() + " was dropped");
                 } else {
