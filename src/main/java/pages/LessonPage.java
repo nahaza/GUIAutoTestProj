@@ -170,6 +170,7 @@ public class LessonPage extends ParentPage {
     }
 
     public LessonPage countScore() {
+        Integer scoreBefore = Integer.parseInt(scoreGetInTestHeader.getText());
         return this;
     }
 
