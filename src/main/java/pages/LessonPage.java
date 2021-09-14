@@ -391,4 +391,34 @@ public class LessonPage extends ParentPage {
         return this;
     }
 
+    //work in progress
+    public LessonPage doTestsForScoreCounting(String specificCourseTitle) throws InterruptedException, IOException {
+        Map<String, String> listFoCoursesId = ExcelDriver.getData(actionsWithElements.configProperties.DATA_FILE_COURSES(), "coursesId");
+        String courseId = listFoCoursesId.get(specificCourseTitle);
+        for (int i = 0; i < listOfLessons.size(); i++) {
+            actionsWithElements.clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));
+            Thread.sleep(2000);
+            actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("/step/1"));
+            logger.info("Lesson " + listOfLessons.get(i).getText());
+            List<WebElement> listOfLessonSteps = webDriver.findElements(By.xpath(listOfLessonStepsOnTopBarLocator));
+            ArrayList<Integer> numberOfQuizStep = new ArrayList<>();
+            List<WebElement> listOfLessonQuizes = webDriver.findElements(By.xpath(listOfLessonQuizesOnTopBarLocator));
+            for (int q = 0; q < listOfLessonQuizes.size(); q++) {
+                numberOfQuizStep.add(Integer.parseInt(listOfLessonQuizes.get(q).getAttribute("data-step-position")));
+            }
+            for (int j = 0; j < listOfLessonSteps.size(); j++) {
+                actionsWithElements.clickOnElement(listOfLessonSteps.get(j), "lesson " + (i + 1) + ", step " + (j + 1));
+                if (numberOfQuizStep.contains(j + 1)) {
+                    doTheTests(courseId, i + 1, j + 1);
+                }
+                actionsWithElements.webDriverWait15.until(ExpectedConditions.titleContains("Шаг " + (j + 1)));
+            }
+        }
+        actionsWithElements.scrollToWebElement(buttonCourseNextStep);
+        actionsWithElements.clickOnElement(buttonCourseNextStep);
+        Assert.assertTrue("Modal popup is not displayed", actionsWithElements.isElementPresent(finishModalPopup));
+        logger.info("Finish course modal popup is displayed");
+        actionsWithElements.clickOnElement(closeFinishModalPopup);
+        return this;
+    }
 }

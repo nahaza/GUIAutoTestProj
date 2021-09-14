@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class CountTestingScoreTest extends BaseTest {
@@ -21,8 +22,13 @@ public class CountTestingScoreTest extends BaseTest {
 
     @Test
     @Ignore
-    public void CountTestingScoreTest(){
-        //work in progress
-
+    public void CountTestingScoreTest() throws IOException, InterruptedException {
+        loginPage.loginWithValidCred(email, password);
+        headerMenu.clickOnMyCourseButton();
+        homePage.clickOnTheCourseInTheListCoursesJoinedPreviously(specificCourseTitle)
+                .clickOnButtonContinueCourseOnTheCoursePage()
+                .doTestsForScoreCounting(specificCourseTitle);
+        headerMenu.clickOnProfileAndSignOutButton();
+        loginPage.checkIsLoginButtonPresent();
     }
 }
