@@ -1,5 +1,6 @@
 package pages;
 
+import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
@@ -32,17 +33,20 @@ public class CoursePage extends ParentPage {
         return "/course/";
     }
 
+    @Step
     public CoursePage checkIsRedirectToCoursePage() {
         checkUrlWithPattern();
         headerMenu.checkIsSignOutButtonPresent();
         return this;
     }
 
+    @Step
     public CoursePage checkIsCourseFreeInfoPresent() {
         Assert.assertTrue("Info course is free is not displayed", actionsWithElements.isElementPresent(infoCourseIsFree));
         return this;
     }
 
+    @Step
     public CoursePage clickOnButtonJoinTheCourse() {
         try {
             actionsWithElements.clickOnElement(buttonJoinTheCourse);
@@ -53,6 +57,7 @@ public class CoursePage extends ParentPage {
         return this;
     }
 
+    @Step
     public LessonPage clickOnButtonJoinTheCourseLoggedInUser() {
         try {
             actionsWithElements.clickOnElement(buttonJoinTheCourse);
@@ -64,6 +69,7 @@ public class CoursePage extends ParentPage {
         return new LessonPage(webDriver);
     }
 
+    @Step
     public LessonPage clickOnButtonContinueCourseOnTheCoursePage() {
         actionsWithElements.clickOnElement(buttonContinueCourseJoinedPreviously);
         actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("lesson"));

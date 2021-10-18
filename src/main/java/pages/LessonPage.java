@@ -1,5 +1,6 @@
 package pages;
 
+import io.qameta.allure.Step;
 import libs.ExcelDriver;
 import org.junit.Assert;
 import org.openqa.selenium.By;
@@ -127,6 +128,7 @@ public class LessonPage extends ParentPage {
         return "/lesson";
     }
 
+    @Step
     public LessonPage checkIsRedirectToLessonPage() {
         checkUrlWithPattern();
         return this;
@@ -137,18 +139,21 @@ public class LessonPage extends ParentPage {
                 courseNameLinkLocator, courseName))), "courseNameLink");
     }
 
+    @Step
     public LessonPage checkIsCourseNamePresent(String courseName) {
         Assert.assertTrue("CourseName is not present on the Page"
                 , isCourseNameLinkPresent(courseName));
         return this;
     }
 
+    @Step
     public LessonPage checkIsCourseNextStepPresent() {
         Assert.assertTrue("CourseNextStep is not present on the Page"
                 , actionsWithElements.isElementPresent(buttonCourseNextStep));
         return this;
     }
 
+    @Step
     public LessonPage finishNoExamCourseWithoutDoingTests() throws InterruptedException {
         for (int i = 0; i < listOfLessons.size(); i++) {
             actionsWithElements.clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));

@@ -1,5 +1,6 @@
 package pageWithElements;
 
+import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
@@ -64,6 +65,7 @@ public class HeaderMenu extends ParentElements {
         Assert.assertTrue("SignOut is not present in the Profile menu", actionsWithElements.isElementPresent(buttonSignOut));
     }
 
+    @Step
     public void clickOnProfileAndSignOutButton() {
         actionsWithElements.clickOnElement(buttonProfile);
         actionsWithElements.webDriverWait15.until(ExpectedConditions.visibilityOf(dropDownProfile));
@@ -72,6 +74,7 @@ public class HeaderMenu extends ParentElements {
         actionsWithElements.clickOnElement(buttonSignOutConfirm);
     }
 
+    @Step
     public void clickOnSignOutButton() {
         actionsWithElements.clickOnElement(buttonSignOut);
         actionsWithElements.webDriverWait15.until(ExpectedConditions.visibilityOf(signOutModalPopUp));
@@ -79,6 +82,7 @@ public class HeaderMenu extends ParentElements {
     }
 
 
+    @Step
     public void clickOnMyCourseButton() {
         actionsWithElements.clickOnElement(buttonMyCourses);
         actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("users"));
