@@ -1,5 +1,6 @@
 package pages;
 
+import io.qameta.allure.Step;
 import libs.TestData;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
@@ -77,6 +78,7 @@ public class LoginPage extends ParentPage {
         return "/catalog";
     }
 
+    @Step
     public void openLoginPage() {
         try {
             webDriver.get("https://stepik.org/catalog");
@@ -100,6 +102,7 @@ public class LoginPage extends ParentPage {
         actionsWithElements.clickOnElement(buttonLogin);
     }
 
+    @Step
     public LoginPage fillLoginFormAndSubmit(String email, String password) {
         openLoginPage();
         headerMenu.clickOnButtonToProceedLogIn();
@@ -109,16 +112,19 @@ public class LoginPage extends ParentPage {
         return this;
     }
 
+    @Step
     public LoginPage checkIsLoginButtonPresent() {
         Assert.assertTrue("Login button is not present", actionsWithElements.isElementPresent(buttonLogin));
         return this;
     }
 
+    @Step
     public LoginPage checkIsInvalidCredErrorMessagePresent() {
         Assert.assertTrue("No error message displayed", actionsWithElements.isElementPresent(invalidCredErrorMessage));
         return this;
     }
 
+    @Step
     public void checkIsButtonToRegisterPresent() {
         Assert.assertTrue("Register button is not present"
                 , actionsWithElements.isElementPresent(buttonRegister));
@@ -140,6 +146,7 @@ public class LoginPage extends ParentPage {
         actionsWithElements.clickOnElement(buttonRegister);
     }
 
+    @Step
     public void fillRegistrationFormAndSubmit(String fullName, String email, String password) {
         openLoginPage();
         headerMenu.clickOnButtonToProceedRegister();
@@ -182,6 +189,7 @@ public class LoginPage extends ParentPage {
         return newUserCredentials;
     }
 
+    @Step
     public HomePage loginWithValidCred(String email, String password) {
         fillLoginFormAndSubmit(email, password);
         return new HomePage(webDriver);
@@ -198,14 +206,17 @@ public class LoginPage extends ParentPage {
         return this;
     }
 
+    @Step
     public void enterTheCourseName(String courseNameToSearch) {
         actionsWithElements.enterTextToElement(inputSearchForm, courseNameToSearch);
     }
 
+    @Step
     public void clickOnSearchButton() {
         actionsWithElements.clickOnElement(buttonSearch);
     }
 
+    @Step
     public CoursePage searchAndJoinUniqueExistentFreeCourseByUnauthorisedUser(String specificCourseTitle) {
         openLoginPage();
         enterTheCourseName(specificCourseTitle);

@@ -1,6 +1,7 @@
 package pages;
 
 
+import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -65,6 +66,7 @@ public class HomePage extends ParentPage {
         return this;
     }
 
+    @Step
     public HomePage checkIsRedirectToHomePage() {
         checkUrlWithPattern();
         headerMenu.checkIsSignOutButtonPresent();
@@ -85,6 +87,7 @@ public class HomePage extends ParentPage {
         actionsWithElements.clickOnElement(buttonSearch);
     }
 
+    @Step
     public CoursePage searchAndJoinUniqueExistentFreeCourseByLoggedInUser(String specificCourseTitle) {
         enterTheCourseName(specificCourseTitle);
         checkIsCloseInputSearchFormButtonPresent();
@@ -113,6 +116,7 @@ public class HomePage extends ParentPage {
         return this;
     }
 
+    @Step
     public CoursePage clickOnTheCourseInTheListCoursesJoinedPreviously(String specificCourseTitle) {
         WebElement specificCourseLink = actionsWithElements.scrollToCourseWithSpecificTitleInResults(
                 specificCourseLocatorInMyCourses, listOfCoursesInMyCoursesLocator, specificCourseTitle);
