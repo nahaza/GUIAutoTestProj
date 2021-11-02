@@ -2,6 +2,7 @@ package pages;
 
 import io.qameta.allure.Step;
 import libs.ExcelDriver;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -56,7 +57,7 @@ public class LessonPage extends ParentPage {
     @FindBy(xpath = ".//div[@class='attempt__score-info']//strong")
     private TextBlock scoreGetInTestFooter;
 
-    @FindBy(xpath = ".//div[@class='top-tools__progress'][2]//span")
+    @FindBy(xpath = ".//div[@class='top-tools__progress'][2]//span[1]")
     private TextBlock scoreGetInTestHeader;
 
     @FindBy(xpath = ".//div[@class='modal-popup__container']")
@@ -64,6 +65,11 @@ public class LessonPage extends ParentPage {
 
     @FindBy(xpath = ".//button[@class='modal-popup__close']")
     private Button closeFinishModalPopup;
+
+    @FindBy(xpath = ".//div[contains(@class, 'vote-widget vote-widget_target_liked vote-widget_target_abused')]//span[@class='svg-icon thumbs-up_icon ember-view vote-widget__icon vote-widget__epic-icon']")
+    private WebElement lessonDoLike;
+
+    private String scoreLocator = ".//div[@class='top-tools__progress'][2]//span[1]";
 
     private String courseNameLinkLocator = ".//a[@title='%s']";
 
@@ -113,6 +119,10 @@ public class LessonPage extends ParentPage {
     private String doAnswerLocatorRadiobuttonOneOption = ".//div[@data-type='choice-quiz']//label[@class='s-radio'][.//span[contains(text(), " + "\"%s\"" + ")]]//span[@class='s-radio__border']";
 
     private String answerLocatorSingleInput = ".//html[@dir='ltr']";
+
+    private String numberOfLessonLikesLocator = ".//div[contains(@class, 'vote-widget vote-widget_target_liked vote-widget_target_abused')]//span[@class='vote-widget__segment vote-widget__segment_type_epic ']";
+
+    private String lessonDoLikeLocator = ".//div[contains(@class, 'vote-widget vote-widget_target_liked vote-widget_target_abused')]//span[@class='svg-icon thumbs-up_icon ember-view vote-widget__icon vote-widget__epic-icon']";
 
     protected List<WebElement> listOfLessons = webDriver.findElements(By.xpath(listOfCourseLessonsLocator));
 
@@ -174,8 +184,32 @@ public class LessonPage extends ParentPage {
         return this;
     }
 
-    public LessonPage countScore() {
-        Integer scoreBefore = Integer.parseInt(scoreGetInTestHeader.getText());
+
+    public LessonPage likeLesson(String specificCourseTitle, Integer lessonNumber) throws InterruptedException {
+        SoftAssertions softAssertions = new SoftAssertions();
+        int numberOfLikeBefore;
+        int numberOfLikeAfter;
+        actionsWithElements.clickOnElement(listOfLessons.get(lessonNumber - 1), "lesson " + lessonNumber);
+        Thread.sleep(2000);
+        actionsWithElements.scrollToWebElement(lessonDoLike);
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.elementToBeClickable(lessonDoLike));
+        numberOfLikeBefore = Integer.parseInt(webDriver.findElement(By.xpath(numberOfLessonLikesLocator)).getText());
+        logger.info("Lesson " + lessonNumber + " number of likes: " + numberOfLikeBefore);
+        actionsWithElements.clickOnElement(lessonDoLike);
+        logger.info("Like of lesson " + lessonNumber);
+        actionsWithElements.webDriverWait15.until(ExpectedConditions.elementToBeClickable(lessonDoLike));
+        numberOfLikeAfter = Integer.parseInt(webDriver.findElement(By.xpath(numberOfLessonLikesLocator)).getText());
+        logger.info("Lesson " + lessonNumber + " number of likes: " + numberOfLikeAfter);
+        softAssertions.assertThat(numberOfLikeAfter).as("Wrong number of lessonLikes").isEqualTo((numberOfLikeBefore + 1));
+        List<WebElement> listOfLessonSteps = webDriver.findElements(By.xpath(listOfLessonStepsOnTopBarLocator));
+        for (int j = 0; j < listOfLessonSteps.size(); j++) {
+            actionsWithElements.clickOnElement(listOfLessonSteps.get(j), "lesson " + lessonNumber + ", step " + (j + 1));
+            actionsWithElements.webDriverWait15.until(ExpectedConditions.titleContains("Шаг " + (j + 1)));
+            softAssertions.assertThat(Integer.parseInt(webDriver.findElement(By.xpath(numberOfLessonLikesLocator)).getText()))
+                    .as("Wrong number of lessonLikes").isEqualTo((numberOfLikeBefore + 1));
+
+        }
+        softAssertions.assertAll();
         return this;
     }
 
@@ -400,7 +434,12 @@ public class LessonPage extends ParentPage {
     public LessonPage doTestsForScoreCounting(String specificCourseTitle) throws InterruptedException, IOException {
         Map<String, String> listFoCoursesId = ExcelDriver.getData(actionsWithElements.configProperties.DATA_FILE_COURSES(), "coursesId");
         String courseId = listFoCoursesId.get(specificCourseTitle);
-        for (int i = 0; i < listOfLessons.size(); i++) {
+        Integer scoreBefore = Integer.parseInt(scoreGetInTestHeader.getText());
+        Integer scoreCount = 0;
+        Integer scoreCountForLesson = 0;
+        Integer scoreCountForLessonStep = 0;
+        //for (int i = 0; i < listOfLessons.size(); i++) {
+        for (int i = 0; i < 1; i++) {
             actionsWithElements.clickOnElement(listOfLessons.get(i), "lesson " + (i + 1));
             Thread.sleep(2000);
             actionsWithElements.webDriverWait15.until(ExpectedConditions.urlContains("/step/1"));
@@ -413,17 +452,54 @@ public class LessonPage extends ParentPage {
             }
             for (int j = 0; j < listOfLessonSteps.size(); j++) {
                 actionsWithElements.clickOnElement(listOfLessonSteps.get(j), "lesson " + (i + 1) + ", step " + (j + 1));
-                if (numberOfQuizStep.contains(j + 1)) {
-                    doTheTests(courseId, i + 1, j + 1);
-                }
                 actionsWithElements.webDriverWait15.until(ExpectedConditions.titleContains("Шаг " + (j + 1)));
+                if (numberOfQuizStep.contains(j + 1)) {
+                    scoreCountForLessonStep += doTheTestsWithScore(courseId, i + 1, j + 1);
+                }
+
             }
+            scoreCountForLesson += scoreCountForLessonStep;
+            Thread.sleep(3000);
+            Assert.assertEquals("CountScore", (scoreBefore + scoreCountForLesson), Integer.parseInt(webDriver.findElement(By.xpath(scoreLocator)).getText()));
+            logger.info("Current score as expected: " + (scoreBefore + scoreCountForLesson));
         }
-        actionsWithElements.scrollToWebElement(buttonCourseNextStep);
-        actionsWithElements.clickOnElement(buttonCourseNextStep);
-        Assert.assertTrue("Modal popup is not displayed", actionsWithElements.isElementPresent(finishModalPopup));
-        logger.info("Finish course modal popup is displayed");
-        actionsWithElements.clickOnElement(closeFinishModalPopup);
         return this;
     }
+
+    public Integer doTheTestsWithScore(String idCourse, int lesson, int step) throws IOException, InterruptedException {
+        Map<String, String> dataForTests = ExcelDriver.getData(
+                actionsWithElements.configProperties.DATA_FILE_PATH() + idCourse + "testData.xls"
+                , String.format("Scorelesson%s_step%s", lesson, step));
+        String actionToDoTheTest = dataForTests.get("action");
+        String answersForDoAnswers = dataForTests.get("answers");
+        String correctAnswers = dataForTests.get("correctAnswers");
+        Integer countCorrectAnswers = 0;
+        if (answersForDoAnswers.equalsIgnoreCase(correctAnswers)) {
+            countCorrectAnswers += 1;
+        }
+        if (actionToDoTheTest.equals("dragAndDrop")) {
+            doTheTestDragAndDrop(dataForTests, step);
+        } else if (actionToDoTheTest.equals("checkbox")) {
+            doTheTestCheckbox(dataForTests, step);
+        } else if (actionToDoTheTest.equals("input")) {
+            doTheTestInput(dataForTests, step);
+        } else if (actionToDoTheTest.equals("radiobutton")) {
+            doTheTestRadiobutton(dataForTests, step);
+        } else if (actionToDoTheTest.equals("radiobuttonOneOption")) {
+            doTheRadiobuttonOneOption(dataForTests, step);
+        } else if (actionToDoTheTest.equals("inputSingleInput")) {
+            doTheTestSingleInput(dataForTests, step);
+        } else if (actionToDoTheTest.equals("dragAndDropSort")) {
+            doTheTestDragAndDropSort(dataForTests, step);
+        } else if (actionToDoTheTest.equals("inputInTextArea")) {
+            doTheTestInputInTextArea(dataForTests, step);
+        }
+        actionsWithElements.clickOnElement(buttonSubmitAnswer);
+        actionsWithElements.webDriverWait5.until(ExpectedConditions.visibilityOf(testResultMessage));
+        Assert.assertTrue(actionsWithElements.isElementPresent(testResultMessage, "Test result message "));
+        logger.info("CountScore " + countCorrectAnswers);
+        return countCorrectAnswers;
+    }
+
+
 }
